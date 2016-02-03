@@ -299,9 +299,14 @@ NSString * const RedlandRelativeURIsFeature = @"http://feature.librdf.org/raptor
 		request = [[NSURLRequest alloc] initWithURL:aURL
 										cachePolicy:NSURLRequestReloadIgnoringCacheData
 									timeoutInterval:30.0];
+        
+#pragma clang diagnostic push 
+#pragma clang diagnostic ignored "-Wdeprecated"
 		NSData *data = [NSURLConnection sendSynchronousRequest:request
 											 returningResponse:&response
 														 error:&error];
+#pragma clang diagnostic pop
+        
 		if (data == nil) {
 			@throw [RedlandException exceptionWithName:RedlandExceptionName
 												reason:[NSString stringWithFormat:@"Could not fetch URL %@: %@", aURL, error]
