@@ -5,6 +5,7 @@
 //
 //  Copyright 2004 Rene Puls <http://purl.org/net/kianga/>
 //	Copyright 2012 Pascal Pfiffner <http://www.chip.org/>
+//  Copyright 2016 Ivano Bilenchi <http://ivanobilenchi.com/>
 //
 //  This file is available under the following three licenses:
 //   1. GNU Lesser General Public License (LGPL), version 2.1
@@ -22,9 +23,10 @@
 //  the most recent version, see <http://librdf.org/>.
 //
 
-#import "StorageTests.h"
-
+#import <XCTest/XCTest.h>
 #import "RedlandStorage.h"
+
+@interface StorageTests : XCTestCase @end
 
 @implementation StorageTests
 
@@ -33,7 +35,7 @@
     RedlandStorage *storage;
     
     storage = [RedlandStorage new];
-    STAssertNotNil(storage, nil);
+    XCTAssertNotNil(storage);
 }
 
 @end

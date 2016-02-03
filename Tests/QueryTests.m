@@ -5,6 +5,7 @@
 //
 //  Copyright 2004 Rene Puls <http://purl.org/net/kianga/>
 //	Copyright 2012 Pascal Pfiffner <http://www.chip.org/>
+//  Copyright 2016 Ivano Bilenchi <http://ivanobilenchi.com/>
 //
 //  This file is available under the following three licenses:
 //   1. GNU Lesser General Public License (LGPL), version 2.1
@@ -22,8 +23,7 @@
 //  the most recent version, see <http://librdf.org/>.
 //
 
-#import "QueryTests.h"
-
+#import <XCTest/XCTest.h>
 #import "RedlandQuery.h"
 #import "RedlandQueryResults.h"
 #import "RedlandQueryResultsEnumerator.h"
@@ -33,6 +33,13 @@
 
 static NSString *RDFXMLTestData = nil;
 static NSString * const RDFXMLTestDataLocation = @"http://www.w3.org/1999/02/22-rdf-syntax-ns";
+
+@interface QueryTests : XCTestCase {
+    RedlandModel *model;
+    RedlandURI *uri;
+}
+
+@end
 
 @implementation QueryTests
 
@@ -68,7 +75,7 @@ static NSString * const RDFXMLTestDataLocation = @"http://www.w3.org/1999/02/22-
 	
 	query = [RedlandQuery queryWithLanguageName:RedlandSPARQLLanguageName
 									queryString:queryString baseURI:nil];
-	STAssertThrowsSpecific([query executeOnModel:model], RedlandException, nil);
+	XCTAssertThrowsSpecific([query executeOnModel:model], RedlandException);
 }
 
 - (void)testQueryAll
@@ -78,17 +85,17 @@ static NSString * const RDFXMLTestDataLocation = @"http://www.w3.org/1999/02/22-
     RedlandQueryResults *results;
     NSArray *allResults;
     
-	STAssertTrue([model size] > 0, nil);
+	XCTAssertTrue([model size] > 0);
 	
     queryString = @"SELECT ?s ?p ?o WHERE { ?s ?p ?o }";
-    STAssertNoThrow(query = [RedlandQuery queryWithLanguageName:RedlandSPARQLLanguageName queryString:queryString baseURI:nil], nil);
-    STAssertNotNil(query, nil);
-    STAssertNoThrow(results = [query executeOnModel:model], nil);
-    STAssertNotNil(results, nil);
+    XCTAssertNoThrow(query = [RedlandQuery queryWithLanguageName:RedlandSPARQLLanguageName queryString:queryString baseURI:nil]);
+    XCTAssertNotNil(query);
+    XCTAssertNoThrow(results = [query executeOnModel:model]);
+    XCTAssertNotNil(results);
 	if (results != nil) {
-		STAssertEquals(3, [results countOfBindings], nil);
-		STAssertNoThrow(allResults = [[results resultEnumerator] allObjects], nil);
-		STAssertEquals((unsigned)[model size], (unsigned)[allResults count], nil);
+		XCTAssertEqual(3, [results countOfBindings]);
+		XCTAssertNoThrow(allResults = [[results resultEnumerator] allObjects]);
+		XCTAssertEqual((unsigned)[model size], (unsigned)[allResults count]);
 	}
 }
 
@@ -99,17 +106,17 @@ static NSString * const RDFXMLTestDataLocation = @"http://www.w3.org/1999/02/22-
     RedlandQueryResults *results;
     NSArray *allResults;
     
-	STAssertTrue([model size] > 0, nil);
+	XCTAssertTrue([model size] > 0);
 	
     queryString = @"SELECT ?s ?o WHERE { ?s a ?o }";
-    STAssertNoThrow(query = [RedlandQuery queryWithLanguageName:RedlandSPARQLLanguageName queryString:queryString baseURI:nil], nil);
-    STAssertNotNil(query, nil);
-    STAssertNoThrow(results = [query executeOnModel:model], nil);
-    STAssertNotNil(results, nil);
+    XCTAssertNoThrow(query = [RedlandQuery queryWithLanguageName:RedlandSPARQLLanguageName queryString:queryString baseURI:nil]);
+    XCTAssertNotNil(query);
+    XCTAssertNoThrow(results = [query executeOnModel:model]);
+    XCTAssertNotNil(results);
 	if (results != nil) {
-		STAssertEquals(2, [results countOfBindings], nil);
-		STAssertNoThrow(allResults = [[results resultEnumerator] allObjects], nil);
-		STAssertTrue([allResults count] > 0, nil);
+		XCTAssertEqual(2, [results countOfBindings]);
+		XCTAssertNoThrow(allResults = [[results resultEnumerator] allObjects]);
+		XCTAssertTrue([allResults count] > 0);
 	}
 }
 

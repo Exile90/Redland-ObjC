@@ -5,6 +5,7 @@
 //
 //  Copyright 2004 Rene Puls <http://purl.org/net/kianga/>
 //	Copyright 2012 Pascal Pfiffner <http://www.chip.org/>
+//  Copyright 2016 Ivano Bilenchi <http://ivanobilenchi.com/>
 //
 //  This file is available under the following three licenses:
 //   1. GNU Lesser General Public License (LGPL), version 2.1
@@ -22,11 +23,13 @@
 //  the most recent version, see <http://librdf.org/>.
 //
 
-#import "NodeTests.h"
+#import <XCTest/XCTest.h>
 #import "RedlandNode.h"
 #import "RedlandNode-Convenience.h"
 #import "RedlandURI.h"
 #import "RedlandException.h"
+
+@interface NodeTests : XCTestCase @end
 
 @implementation NodeTests
 
@@ -38,16 +41,16 @@
 	
 	RedlandNode *nodeWithType = [RedlandNode nodeWithLiteral:string language:language type:typeURI];
 	RedlandNode *nodeWithLang = [RedlandNode nodeWithLiteral:string language:language type:nil];
-	STAssertNotNil(nodeWithType, nil);
-	STAssertNotNil(nodeWithLang, nil);
-	STAssertTrue([nodeWithType isLiteral], nil);
-	STAssertTrue([nodeWithLang isLiteral], nil);
-	STAssertEqualObjects(string, [nodeWithType literalValue], nil);
-	STAssertEqualObjects(string, [nodeWithLang literalValue], nil);
-	STAssertEqualObjects(nil, [nodeWithType literalLanguage], nil);				// language can only be set if type is nil
-	STAssertEqualObjects(language, [nodeWithLang literalLanguage], nil);		// language is now set
-	STAssertEqualObjects(typeURI, [nodeWithType literalDataType], nil);
-	STAssertFalse([nodeWithType isXML], nil);
+	XCTAssertNotNil(nodeWithType);
+	XCTAssertNotNil(nodeWithLang);
+	XCTAssertTrue([nodeWithType isLiteral]);
+	XCTAssertTrue([nodeWithLang isLiteral]);
+	XCTAssertEqualObjects(string, [nodeWithType literalValue]);
+	XCTAssertEqualObjects(string, [nodeWithLang literalValue]);
+	XCTAssertEqualObjects(nil, [nodeWithType literalLanguage]);				// language can only be set if type is nil
+	XCTAssertEqualObjects(language, [nodeWithLang literalLanguage]);		// language is now set
+	XCTAssertEqualObjects(typeURI, [nodeWithType literalDataType]);
+	XCTAssertFalse([nodeWithType isXML]);
 }
 
 - (void)testLiteralXML
@@ -57,16 +60,16 @@
 	
 	RedlandNode *nodeXML = [RedlandNode nodeWithLiteral:string language:language isXML:YES];
 	RedlandNode *nodeNot = [RedlandNode nodeWithLiteral:string language:language isXML:NO];
-	STAssertNotNil(nodeXML, nil);
-	STAssertNotNil(nodeNot, nil);
-	STAssertTrue([nodeXML isLiteral], nil);
-	STAssertTrue([nodeNot isLiteral], nil);
-	STAssertEqualObjects(string, [nodeXML literalValue], nil);
-	STAssertEqualObjects(string, [nodeNot literalValue], nil);
-	STAssertEqualObjects(nil, [nodeXML literalLanguage], nil);				// language can only be set if the node is NOT XML
-	STAssertEqualObjects(language, [nodeNot literalLanguage], nil);			// language is now set
-	STAssertTrue([nodeXML isXML], nil);
-	STAssertFalse([nodeNot isXML], nil);
+	XCTAssertNotNil(nodeXML);
+	XCTAssertNotNil(nodeNot);
+	XCTAssertTrue([nodeXML isLiteral]);
+	XCTAssertTrue([nodeNot isLiteral]);
+	XCTAssertEqualObjects(string, [nodeXML literalValue]);
+	XCTAssertEqualObjects(string, [nodeNot literalValue]);
+	XCTAssertEqualObjects(nil, [nodeXML literalLanguage]);				// language can only be set if the node is NOT XML
+	XCTAssertEqualObjects(language, [nodeNot literalLanguage]);			// language is now set
+	XCTAssertTrue([nodeXML isXML]);
+	XCTAssertFalse([nodeNot isXML]);
 }
 
 - (void)testBlank
@@ -74,18 +77,18 @@
 	NSString *string = @"myBlankId";
 	
 	RedlandNode *node = [RedlandNode nodeWithBlankID:string];
-	STAssertNotNil(node, nil);
-	STAssertTrue([node isBlank], nil);
-	STAssertEqualObjects(string, [node blankID], nil);
+	XCTAssertNotNil(node);
+	XCTAssertTrue([node isBlank]);
+	XCTAssertEqualObjects(string, [node blankID]);
 }
 
 - (void)testBlankRandom
 {
 	RedlandNode *node1 = [RedlandNode nodeWithBlankID:nil];
-	STAssertNotNil(node1, nil);
+	XCTAssertNotNil(node1);
 	RedlandNode *node2 = [RedlandNode nodeWithBlankID:nil];
-	STAssertNotNil(node2, nil);
-	STAssertFalse([node1 isEqual:node2], nil);
+	XCTAssertNotNil(node2);
+	XCTAssertFalse([node1 isEqual:node2]);
 }
 
 - (void)testResource
@@ -93,9 +96,9 @@
 	RedlandURI *uri = [RedlandURI URIWithString:@"http://foo.com/"];
 	
 	RedlandNode *node = [RedlandNode nodeWithURI:uri];
-	STAssertNotNil(node, nil);
-	STAssertTrue([node isResource], nil);
-	STAssertEqualObjects(uri, [node URIValue], nil);
+	XCTAssertNotNil(node);
+	XCTAssertTrue([node isResource]);
+	XCTAssertEqualObjects(uri, [node URIValue]);
 }
 
 - (void)testNodeEquality
@@ -107,17 +110,17 @@
 	RedlandNode *node1 = [RedlandNode nodeWithURIString:url1];
 	RedlandNode *node2 = [RedlandNode nodeWithURIString:url2];
 	RedlandNode *node3 = [RedlandNode nodeWithURIString:url3];
-	STAssertFalse([node1 isEqual:node2], nil);
-	STAssertEqualObjects(node1, node3, nil);
+	XCTAssertFalse([node1 isEqual:node2]);
+	XCTAssertEqualObjects(node1, node3);
 }
 
 - (void)testLiteralInt
 {
 	RedlandNode *node = [RedlandNode nodeWithLiteralInt:12345];
-	STAssertEquals(12345, [node intValue], nil);
+	XCTAssertEqual(12345, [node intValue]);
 	
 	node = [RedlandNode nodeWithLiteral:@"12345" language:nil isXML:NO];
-	STAssertThrowsSpecific([node intValue], RedlandException, nil);
+	XCTAssertThrowsSpecific([node intValue], RedlandException);
 }
 
 - (void)testLiteralString
@@ -125,20 +128,20 @@
 	NSString *string = @"Hello world";
 	
 	RedlandNode *node = [RedlandNode nodeWithLiteralString:string language:@"en"];
-	STAssertNotNil(node, nil);
-	STAssertEqualObjects(string, [node stringValue], nil);
+	XCTAssertNotNil(node);
+	XCTAssertEqualObjects(string, [node stringValue]);
 	
 	node = [RedlandNode nodeWithLiteral:string language:@"en" isXML:NO];
-	STAssertThrowsSpecific([node stringValue], RedlandException, nil);
+	XCTAssertThrowsSpecific([node stringValue], RedlandException);
 }
 
 - (void)testLiteralBool
 {
 	RedlandNode *node = [RedlandNode nodeWithLiteralBool:TRUE];
-	STAssertTrue([node boolValue], nil);
+	XCTAssertTrue([node boolValue]);
 	
 	node = [RedlandNode nodeWithLiteral:@"true" language:@"en" isXML:NO];
-	STAssertThrowsSpecific([node boolValue], RedlandException, nil);
+	XCTAssertThrowsSpecific([node boolValue], RedlandException);
 }
 
 - (void)testLiteralFloatDouble
@@ -146,10 +149,10 @@
 	RedlandNode *floatNode = [RedlandNode nodeWithLiteralFloat:M_PI];
 	RedlandNode *doubleNode = [RedlandNode nodeWithLiteralDouble:M_PI];
 	
-	STAssertEqualsWithAccuracy((float)M_PI, [floatNode floatValue], 0.000001, nil);
-	STAssertEqualsWithAccuracy((double)M_PI, [floatNode doubleValue], 0.000001, nil);
-	STAssertThrowsSpecific([doubleNode floatValue], RedlandException, nil);
-	STAssertEqualsWithAccuracy((double)M_PI, [doubleNode doubleValue], 0.0000000000001, nil);
+	XCTAssertEqualWithAccuracy((float)M_PI, [floatNode floatValue], 0.000001);
+	XCTAssertEqualWithAccuracy((double)M_PI, [floatNode doubleValue], 0.000001);
+	XCTAssertThrowsSpecific([doubleNode floatValue], RedlandException);
+	XCTAssertEqualWithAccuracy((double)M_PI, [doubleNode doubleValue], 0.0000000000001);
 }
 
 - (void)testLiteralDateTime
@@ -157,21 +160,21 @@
 	NSDate *date = [NSDate date];
 	
 	RedlandNode *node = [RedlandNode nodeWithLiteralDateTime:date];
-	STAssertNotNil(node, nil);
-	STAssertEqualsWithAccuracy((float)0.0f, (float)[date timeIntervalSinceDate:[node dateTimeValue]], 1.0f, nil);
+	XCTAssertNotNil(node);
+	XCTAssertEqualWithAccuracy((float)0.0f, (float)[date timeIntervalSinceDate:[node dateTimeValue]], 1.0f);
 	
 	node = [RedlandNode nodeWithLiteralString:@"2004-09-16T20:36:18Z" language:nil];
-	STAssertThrowsSpecific([node dateTimeValue], RedlandException, nil);
+	XCTAssertThrowsSpecific([node dateTimeValue], RedlandException);
 }
 
 - (void)testArchiving
 {
 	RedlandNode *sourceNode = [RedlandNode nodeWithLiteralString:@"Hello world" language:@"en"];
 	NSData *data = [NSKeyedArchiver archivedDataWithRootObject:sourceNode];
-	STAssertNotNil(data, nil);
+	XCTAssertNotNil(data);
 	RedlandNode *decodedNode = [NSKeyedUnarchiver unarchiveObjectWithData:data];
-	STAssertNotNil(decodedNode, nil);
-	STAssertEqualObjects(sourceNode, decodedNode, nil);
+	XCTAssertNotNil(decodedNode);
+	XCTAssertEqualObjects(sourceNode, decodedNode);
 }
 
 - (void)testNodeValueConversion
@@ -180,12 +183,12 @@
 	// distinguish a boolean NSNumber from an int NSNumber...
 	//    UKObjectsEqual([RedlandNode nodeWithLiteralBool:YES],
 	//                   [RedlandNode nodeWithObject:[NSNumber numberWithBool:YES]]);
-	STAssertEqualObjects([RedlandNode nodeWithLiteralInt:12345], [RedlandNode nodeWithObject:[NSNumber numberWithInt:12345]], nil);
-	STAssertEqualObjects([RedlandNode nodeWithLiteralFloat:1.2345f], [RedlandNode nodeWithObject:[NSNumber numberWithFloat:1.2345f]], nil);
-	STAssertEqualObjects([RedlandNode nodeWithLiteralDouble:12.3456790], [RedlandNode nodeWithObject:[NSNumber numberWithDouble:12.3456790]], nil);
-	STAssertEqualObjects([RedlandNode nodeWithLiteralString:@"foo" language:nil], [RedlandNode nodeWithObject:@"foo"], nil);
-	STAssertEqualObjects([RedlandNode nodeWithURL:[NSURL URLWithString:@"http://foo"]], [RedlandNode nodeWithObject:[NSURL URLWithString:@"http://foo"]], nil);
-	STAssertEqualObjects([RedlandNode nodeWithLiteralDateTime:[NSDate dateWithTimeIntervalSinceReferenceDate:0]], [RedlandNode nodeWithObject:[NSDate dateWithTimeIntervalSinceReferenceDate:0]], nil);
+	XCTAssertEqualObjects([RedlandNode nodeWithLiteralInt:12345], [RedlandNode nodeWithObject:[NSNumber numberWithInt:12345]]);
+	XCTAssertEqualObjects([RedlandNode nodeWithLiteralFloat:1.2345f], [RedlandNode nodeWithObject:[NSNumber numberWithFloat:1.2345f]]);
+	XCTAssertEqualObjects([RedlandNode nodeWithLiteralDouble:12.3456790], [RedlandNode nodeWithObject:[NSNumber numberWithDouble:12.3456790]]);
+	XCTAssertEqualObjects([RedlandNode nodeWithLiteralString:@"foo" language:nil], [RedlandNode nodeWithObject:@"foo"]);
+	XCTAssertEqualObjects([RedlandNode nodeWithURL:[NSURL URLWithString:@"http://foo"]], [RedlandNode nodeWithObject:[NSURL URLWithString:@"http://foo"]]);
+	XCTAssertEqualObjects([RedlandNode nodeWithLiteralDateTime:[NSDate dateWithTimeIntervalSinceReferenceDate:0]], [RedlandNode nodeWithObject:[NSDate dateWithTimeIntervalSinceReferenceDate:0]]);
 }
 
 @end

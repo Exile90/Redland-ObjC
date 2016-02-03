@@ -5,6 +5,7 @@
 //
 //  Copyright 2004 Rene Puls <http://purl.org/net/kianga/>
 //	Copyright 2012 Pascal Pfiffner <http://www.chip.org/>
+//  Copyright 2016 Ivano Bilenchi <http://ivanobilenchi.com/>
 //
 //  This file is available under the following three licenses:
 //   1. GNU Lesser General Public License (LGPL), version 2.1
@@ -22,16 +23,18 @@
 //  the most recent version, see <http://librdf.org/>.
 //
 
-#import "WorldTests.h"
+#import <XCTest/XCTest.h>
 #import "RedlandWorld.h"
+
+@interface WorldTests : XCTestCase @end
 
 @implementation WorldTests
 
 - (void)testDefaultWorld
 {
-    STAssertEquals([RedlandWorld defaultWorld], [RedlandWorld defaultWorld], nil);
-    STAssertTrue([RedlandWorld defaultWrappedWorld] != NULL, nil);
-    STAssertEquals([RedlandWorld defaultWrappedWorld], [RedlandWorld defaultWrappedWorld], nil);
+    XCTAssertEqual([RedlandWorld defaultWorld], [RedlandWorld defaultWorld]);
+    XCTAssertTrue([RedlandWorld defaultWrappedWorld] != NULL);
+    XCTAssertEqual([RedlandWorld defaultWrappedWorld], [RedlandWorld defaultWrappedWorld]);
 }
 
 @end

@@ -5,6 +5,7 @@
 //
 //  Copyright 2004 Rene Puls <http://purl.org/net/kianga/>
 //	Copyright 2012 Pascal Pfiffner <http://www.chip.org/>
+//  Copyright 2016 Ivano Bilenchi <http://ivanobilenchi.com/>
 //
 //  This file is available under the following three licenses:
 //   1. GNU Lesser General Public License (LGPL), version 2.1
@@ -22,8 +23,7 @@
 //  the most recent version, see <http://librdf.org/>.
 //
 
-#import "SerializerTests.h"
-
+#import <XCTest/XCTest.h>
 #import "RedlandModel.h"
 #import "RedlandURI.h"
 #import "RedlandParser.h"
@@ -31,6 +31,13 @@
 
 static NSString *RDFXMLTestData = nil;
 static NSString * const RDFXMLTestDataLocation = @"http://www.w3.org/1999/02/22-rdf-syntax-ns";
+
+@interface SerializerTests : XCTestCase {
+    RedlandModel *model;
+    RedlandURI *uri;
+}
+
+@end
 
 @implementation SerializerTests
 
@@ -68,11 +75,11 @@ static NSString * const RDFXMLTestDataLocation = @"http://www.w3.org/1999/02/22-
     NSString *tempFileName = [NSTemporaryDirectory() stringByAppendingPathComponent:[[NSProcessInfo processInfo] globallyUniqueString]]; 
     BOOL isDir;
     
-    STAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:tempFileName], nil);
-    STAssertNoThrow([serializer serializeModel:model toFileName:tempFileName withBaseURI:uri], nil);
-    STAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:tempFileName isDirectory:(BOOL *)&isDir], nil);
+    XCTAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:tempFileName]);
+    XCTAssertNoThrow([serializer serializeModel:model toFileName:tempFileName withBaseURI:uri]);
+    XCTAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:tempFileName isDirectory:(BOOL *)&isDir]);
 	NSStringEncoding usedEncoding = 0;
-    STAssertTrue([(NSString *)[NSString stringWithContentsOfFile:tempFileName usedEncoding:&usedEncoding error:nil] length] > 0, nil);
+    XCTAssertTrue([(NSString *)[NSString stringWithContentsOfFile:tempFileName usedEncoding:&usedEncoding error:nil] length] > 0);
     if (!isDir) {
 		[[NSFileManager defaultManager] removeItemAtPath:tempFileName error:nil];
 	}
@@ -85,20 +92,20 @@ static NSString * const RDFXMLTestDataLocation = @"http://www.w3.org/1999/02/22-
     NSData *data = nil;
     RedlandModel *newModel = [RedlandModel new];
     
-    STAssertNoThrow(data = [serializer serializedDataFromModel:model withBaseURI:uri], nil);
-    STAssertNotNil(data, nil);
-    STAssertTrue([data length] > 0, nil);
-    STAssertNoThrow([parser parseData:data intoModel:newModel withBaseURI:uri], nil);
-    STAssertTrue([newModel size] > 0, nil);
-    STAssertEquals([model size], [newModel size], nil);
+    XCTAssertNoThrow(data = [serializer serializedDataFromModel:model withBaseURI:uri]);
+    XCTAssertNotNil(data);
+    XCTAssertTrue([data length] > 0);
+    XCTAssertNoThrow([parser parseData:data intoModel:newModel withBaseURI:uri]);
+    XCTAssertTrue([newModel size] > 0);
+    XCTAssertEqual([model size], [newModel size]);
 }
 
 - (void)testConvenience
 {
     NSData *data;
     
-    STAssertNoThrow(data = [model serializedRDFXMLDataWithBaseURI:uri], nil);
-    STAssertTrue([data length] > 0, nil);
+    XCTAssertNoThrow(data = [model serializedRDFXMLDataWithBaseURI:uri]);
+    XCTAssertTrue([data length] > 0);
 }
 
 @end
