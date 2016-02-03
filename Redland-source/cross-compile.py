@@ -57,6 +57,7 @@ MAKE_UNIVERSAL = []
 
 # where to put the universal libraries and downloads
 UNIVERSAL = 'Universal'
+UNIVERSAL_IOS_SIM = '%s-iOS-Sim' % UNIVERSAL
 DOWNLOAD = 'downloads'
 
 # SDK-version to use (e.g. 5.1 for iOS SDK 5.1). Can be 'None'
@@ -94,7 +95,7 @@ def main():
 	os.chdir(os.path.split(abspath)[0])
 	
 	# collect all needed directories
-	dirs = [DOWNLOAD, UNIVERSAL]
+	dirs = [DOWNLOAD, UNIVERSAL_IOS_SIM]
 	for platform in ARCHS.keys():
 		dirs.append('%s-%s' % (UNIVERSAL, platform))
 		archs = ARCHS[platform]
@@ -159,11 +160,12 @@ def main():
 					shutil.copy2(libs[0], target)
 			
 			# iOS and Simulator universal
-			lib = '%s.a' % lib_base
-			p = subprocess.call('lipo -create -output %s/%s product-iOS-*/lib/%s product-Mac-*/lib/%s' % (UNIVERSAL, lib, lib, lib), shell=True)
-			if 0 != p:
-				print shell_color('xx>  lipo failed to create the uber-universal library for %s' % lib, 'red', True)
-				#sys.exit(1)
+			if 'iOS' in ARCHS and 'Sim' in ARCHS:
+				lib = '%s.a' % lib_base
+				p = subprocess.call('lipo -create -output %s/%s product-iOS-*/lib/%s product-Sim-*/lib/%s' % (UNIVERSAL_IOS_SIM, lib, lib, lib), shell=True)
+				if 0 != p:
+					print shell_color('xx>  lipo failed to create the uber-universal library for %s' % lib, 'red', True)
+					#sys.exit(1)
 	
 	# set install names
 	# install_name_tool -id @loader_path/Frameworks/librdf.dylib librdf.dylib

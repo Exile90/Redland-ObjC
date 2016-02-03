@@ -14,10 +14,8 @@
 #	you want to build for and then use `lipo` to combine the static libs. Some
 #	libraries may compile just fine if you specify multiple archs.
 #
-#	This script has last been tested with Xcode 4.4 and 4.5-DP4 on OS X 10.8
-#
 
-export IPHONEOS_DEPLOYMENT_TARGET="5.0"
+export IPHONEOS_DEPLOYMENT_TARGET="4.2"
 
 # extract command line arguments
 archs=()
@@ -90,10 +88,10 @@ export PKG_CONFIG_PATH="${SDKROOT}/usr/lib/pkgconfig:${DEVROOT}/usr/lib/pkgconfi
 #export PKG_CONFIG_LIBDIR="$PKG_CONFIG"
 
 # set flags
-export CFLAGS="-std=c99 $ARCH -pipe --sysroot=$SDKROOT -isysroot $SDKROOT -I${SDKROOT}/usr/include -I${DEVROOT}/usr/include -I${PREFIX}/include"
+export CFLAGS="-miphoneos-version-min=$IPHONEOS_DEPLOYMENT_TARGET -std=c99 $ARCH -pipe --sysroot=$SDKROOT -isysroot $SDKROOT -I${SDKROOT}/usr/include -I${DEVROOT}/usr/include -I${PREFIX}/include"
 export CPPFLAGS="$CFLAGS"
 export CXXFLAGS="$CFLAGS"
-export LDFLAGS="--sysroot=$SDKROOT -isysroot $SDKROOT -L${SDKROOT}/usr/lib/system -L${SDKROOT}/usr/lib -L${PREFIX}/lib"
+export LDFLAGS="-miphoneos-version-min=$IPHONEOS_DEPLOYMENT_TARGET --sysroot=$SDKROOT -isysroot $SDKROOT -L${SDKROOT}/usr/lib/system -L${SDKROOT}/usr/lib -L${PREFIX}/lib"
 
 # set paths
 export CC=/usr/bin/gcc		# used to be "${DEVROOT}/usr/bin/gcc", but Xcode 5 no longer bundles gcc for iPhoneOS.platform
