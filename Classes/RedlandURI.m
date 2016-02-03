@@ -90,6 +90,8 @@
 
 - (id)copyWithZone:(NSZone *)aZone
 {
+    _Pragma("unused(aZone)")
+    
 	librdf_uri *copy = librdf_new_uri_from_uri(wrappedObject);
 	return [[[self class] alloc] initWithWrappedObject:copy];
 }
@@ -180,7 +182,7 @@
 	if (self == otherURI) {
 		return YES;
 	}
-	return librdf_uri_equals(wrappedObject, [otherURI wrappedURI]);
+	return 0 != librdf_uri_equals(wrappedObject, [otherURI wrappedURI]);
 }
 
 /**

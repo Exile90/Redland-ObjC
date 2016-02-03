@@ -44,7 +44,7 @@ NSString * const RedlandSPARQLLanguageName = @"sparql";
  *  @param queryString The query string in the given language
  *  @param baseURI The base URI to use
  */
-+ (id)queryWithLanguageName:(NSString *)langName queryString:(NSString *)queryString baseURI:(RedlandURI *)baseURI;
++ (id)queryWithLanguageName:(NSString *)langName queryString:(NSString *)queryString baseURI:(RedlandURI *)baseURI
 {
 	return [[self alloc] initWithLanguageName:langName queryString:queryString baseURI:baseURI];
 }
@@ -56,7 +56,7 @@ NSString * const RedlandSPARQLLanguageName = @"sparql";
  *  @param queryString The query string in the given language
  *  @param baseURI The base uri to use
  */
-+ (id)queryWithLanguageName:(NSString *)langName languageURI:(RedlandURI *)langURI queryString:(NSString *)queryString baseURI:(RedlandURI *)baseURI;
++ (id)queryWithLanguageName:(NSString *)langName languageURI:(RedlandURI *)langURI queryString:(NSString *)queryString baseURI:(RedlandURI *)baseURI
 {
 	return [[self alloc] initWithLanguageName:langName languageURI:langURI queryString:queryString baseURI:baseURI];
 }
@@ -67,7 +67,7 @@ NSString * const RedlandSPARQLLanguageName = @"sparql";
  *  @param queryString The query string in the given language
  *  @param baseURI The base URI to use
  */
-- (id)initWithLanguageName:(NSString *)langName queryString:(NSString *)queryString baseURI:(RedlandURI *)baseURI;
+- (id)initWithLanguageName:(NSString *)langName queryString:(NSString *)queryString baseURI:(RedlandURI *)baseURI
 {
 	return [self initWithLanguageName:langName languageURI:nil queryString:queryString baseURI:baseURI];
 }
@@ -79,7 +79,7 @@ NSString * const RedlandSPARQLLanguageName = @"sparql";
  *  @param queryString The query string in the given language
  *  @param baseURI The base uri to use
  */
-- (id)initWithLanguageName:(NSString *)langName languageURI:(RedlandURI *)langURI queryString:(NSString *)queryString baseURI:(RedlandURI *)baseURI;
+- (id)initWithLanguageName:(NSString *)langName languageURI:(RedlandURI *)langURI queryString:(NSString *)queryString baseURI:(RedlandURI *)baseURI
 {
 	NSParameterAssert(langName != nil || langURI != nil);
 	NSParameterAssert(queryString != nil);
@@ -166,14 +166,3 @@ NSString * const RedlandSPARQLLanguageName = @"sparql";
 
 
 @end
-
-
-/**
- *  Mapping from clock$UNIX2003() to clock()
- *  @todo There probably is a cleaner solution to this, but it's out of my league.
- */
-clock_t clock$UNIX2003(void)
-{
-	return clock();
-}
-

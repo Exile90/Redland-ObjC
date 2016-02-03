@@ -146,8 +146,8 @@
 
 - (void)testLiteralFloatDouble
 {
-	RedlandNode *floatNode = [RedlandNode nodeWithLiteralFloat:M_PI];
-	RedlandNode *doubleNode = [RedlandNode nodeWithLiteralDouble:M_PI];
+	RedlandNode *floatNode = [RedlandNode nodeWithLiteralFloat:(float)M_PI];
+	RedlandNode *doubleNode = [RedlandNode nodeWithLiteralDouble:(double)M_PI];
 	
 	XCTAssertEqualWithAccuracy((float)M_PI, [floatNode floatValue], 0.000001);
 	XCTAssertEqualWithAccuracy((double)M_PI, [floatNode doubleValue], 0.000001);

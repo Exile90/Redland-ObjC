@@ -23,6 +23,7 @@
 //
 
 #import "RedlandQueryResults.h"
+#import "RedlandException.h"
 #import "RedlandStream.h"
 #import "RedlandNode.h"
 #import "RedlandQueryResultsEnumerator.h"
@@ -80,7 +81,7 @@ RedlandURI * RedlandSPARQLVariableBindingResultsXMLFormat = nil;
  */
 - (BOOL)finished
 {
-    return librdf_query_results_finished(wrappedObject);
+    return 0 != librdf_query_results_finished(wrappedObject);
 }
 
 
@@ -157,18 +158,29 @@ RedlandURI * RedlandSPARQLVariableBindingResultsXMLFormat = nil;
     int bindingsCount = [self countOfBindings];
     int i = 0;
     
-    values = malloc(sizeof(librdf_node *) * bindingsCount);
-    librdf_query_results_get_bindings(wrappedObject, &names, values);
-    for (; i<bindingsCount; i++) {
-        librdf_node *node;
-        id object = [NSNull null];
-        if (values[i]) {
-            node = librdf_new_node_from_node(values[i]);
-            object = [[RedlandNode alloc] initWithWrappedObject:node];
+    if (bindingsCount > 0)
+    {
+        values = malloc(sizeof(librdf_node *) * (unsigned long)bindingsCount);
+        librdf_query_results_get_bindings(wrappedObject, &names, values);
+        for (; i<bindingsCount; i++) {
+            librdf_node *node;
+            id object = [NSNull null];
+            if (values[i]) {
+                node = librdf_new_node_from_node(values[i]);
+                object = [[RedlandNode alloc] initWithWrappedObject:node];
+            }
+            
+            NSString *name = [NSString stringWithUTF8String:names[i]];
+            if (!name) {
+                @throw [RedlandException exceptionWithName:RedlandExceptionName
+                                                    reason:@"null name for query result binding"
+                                                  userInfo:@{ @"object": object}];
+            }
+            
+            [bindings setObject:object forKey:name];
         }
-        [bindings setObject:object forKey:[NSString stringWithUTF8String:names[i]]];
+        free(values);
     }
-    free(values);
     return bindings;
 }
 

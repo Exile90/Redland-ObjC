@@ -73,7 +73,7 @@
 
 - (BOOL)end
 {
-    return librdf_iterator_end(wrappedObject);
+    return 0 != librdf_iterator_end(wrappedObject);
 }
 
 @end

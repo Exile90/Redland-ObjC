@@ -196,6 +196,8 @@
 
 - (id)copyWithZone:(NSZone *)aZone
 {
+    _Pragma("unused(aZone)")
+    
 	librdf_node *copy = librdf_new_node_from_node(wrappedObject);
 	if (NULL == copy) {
 		DLog(@"Failed to init rdf_node");
@@ -395,7 +397,7 @@
  */
 - (BOOL)isLiteral
 {
-	return librdf_node_is_literal(wrappedObject);
+	return 0 != librdf_node_is_literal(wrappedObject);
 }
 
 /**
@@ -403,7 +405,7 @@
  */
 - (BOOL)isResource
 {
-	return librdf_node_is_resource(wrappedObject);
+	return 0 != librdf_node_is_resource(wrappedObject);
 }
 
 /**
@@ -411,7 +413,7 @@
  */
 - (BOOL)isBlank
 {
-	return librdf_node_is_blank(wrappedObject);
+	return 0 != librdf_node_is_blank(wrappedObject);
 }
 
 /**
@@ -419,7 +421,7 @@
  */
 - (BOOL)isXML
 {
-	return librdf_node_get_literal_value_is_wf_xml(wrappedObject);
+	return 0 != librdf_node_get_literal_value_is_wf_xml(wrappedObject);
 }
 
 /**

@@ -197,7 +197,7 @@
 - (BOOL)containsStatement:(RedlandStatement *)aStatement
 {
 	NSParameterAssert(aStatement != nil);
-	return librdf_model_contains_statement(wrappedObject, [aStatement wrappedStatement]);
+	return 0 != librdf_model_contains_statement(wrappedObject, [aStatement wrappedStatement]);
 }
 
 /**
@@ -528,7 +528,7 @@
 	NSParameterAssert(targetNode != nil);
 	NSParameterAssert(arcNode != nil);
 	
-	return librdf_model_has_arc_in(wrappedObject, [targetNode wrappedNode], [arcNode wrappedNode]);
+	return 0 != librdf_model_has_arc_in(wrappedObject, [targetNode wrappedNode], [arcNode wrappedNode]);
 }
 
 /**
@@ -541,7 +541,7 @@
 	NSParameterAssert(sourceNode != nil);
 	NSParameterAssert(arcNode != nil);
 	
-	return librdf_model_has_arc_out(wrappedObject, [sourceNode wrappedNode], [arcNode wrappedNode]);
+	return 0 != librdf_model_has_arc_out(wrappedObject, [sourceNode wrappedNode], [arcNode wrappedNode]);
 }
 
 

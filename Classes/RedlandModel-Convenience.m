@@ -220,7 +220,7 @@
  *  Returns an NSEnumerator of all contexts in the receiver.
  *  @return An NSEnumerator
  */
-- (NSEnumerator *)contextEnumerator;
+- (NSEnumerator *)contextEnumerator
 {
     RedlandIterator *iterator = [self contextIterator];
     return [[RedlandIteratorEnumerator alloc] initWithRedlandIterator:iterator objectClass:[RedlandNode class]];

@@ -182,8 +182,9 @@ static int redland_log_handler(void *user_data, librdf_log_message *message)
  */
 - (int)handleLogMessage:(librdf_log_message *)aMessage
 {
+    NSString *message = [NSString stringWithUTF8String:aMessage->message];
     NSDictionary *infoDict = [[NSDictionary alloc] initWithObjectsAndKeys:
-							  [NSString stringWithUTF8String:aMessage->message], @"message",
+                              (message ?: @""), @"message",
 							  [NSNumber numberWithInt:aMessage->level], @"level",
 							  [NSNumber numberWithInt:aMessage->facility], @"facility",
 							  [NSValue valueWithPointer:aMessage->locator], @"locator",

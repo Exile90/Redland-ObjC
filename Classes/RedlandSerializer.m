@@ -166,7 +166,7 @@ NSString * const RedlandRSS10Serializer = @"rss-1.0";
  *  @param fileHandle the filehandle as NSFileHandle to write to
  *  @param aURI The base-URI to use as RedlandURI
  */
-- (void)serializeModel:(RedlandModel *)aModel toFileHandle:(NSFileHandle *)fileHandle withBaseURI:(RedlandURI *)aURI;
+- (void)serializeModel:(RedlandModel *)aModel toFileHandle:(NSFileHandle *)fileHandle withBaseURI:(RedlandURI *)aURI
 {
 	NSParameterAssert(aModel != nil);
 	NSParameterAssert(fileHandle != nil);
@@ -320,25 +320,4 @@ NSString * const RedlandRSS10Serializer = @"rss-1.0";
 	return [serializer serializedDataFromModel:self withBaseURI:baseURI];
 }
 
-
 @end
-
-
-/**
- *  librdf_serializer_serialize_model_to_file() uses the UNIX conformance variant for fopen, "fopen$UNIX2003". This method maps those two functions.
- *  @todo Is there a cleaner solution to this?
- */
-FILE *fopen$UNIX2003( const char *filename, const char *mode )
-{
-	return fopen(filename, mode);
-}
-
-/**
- *  raptor_filename_iostream_write_bytes() uses the UNIX conformance variant for fwrite, "fwrite$UNIX2003". This method maps those two functions.
- *  @todo Is there a cleaner solution to this?
- */
-size_t fwrite$UNIX2003( const void *a, size_t b, size_t c, FILE *d )
-{
-	return fwrite(a, b, c, d);
-}
-

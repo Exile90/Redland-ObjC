@@ -132,7 +132,7 @@
  */
 - (BOOL)isComplete
 {
-	return librdf_statement_is_complete(wrappedObject);
+	return 0 != librdf_statement_is_complete(wrappedObject);
 }
 
 
@@ -146,7 +146,7 @@
 - (BOOL)matchesPartialStatement:(RedlandStatement *)aStatement
 {
 	NSParameterAssert(aStatement != nil);
-	return librdf_statement_match(wrappedObject, [aStatement wrappedStatement]);
+	return 0 != librdf_statement_match(wrappedObject, [aStatement wrappedStatement]);
 }
 
 - (BOOL)isEqualToStatement:(RedlandStatement *)aStatement
@@ -154,7 +154,7 @@
 	if (aStatement == nil) {
 		return NO;
 	}
-	return librdf_statement_equals(wrappedObject, [aStatement wrappedStatement]);
+	return 0 != librdf_statement_equals(wrappedObject, [aStatement wrappedStatement]);
 }
 
 - (BOOL)isEqual:(id)otherStatement
@@ -175,6 +175,8 @@
 #pragma mark - NSCopying
 - (id)copyWithZone:(NSZone *)aZone
 {
+    _Pragma("unused(aZone)")
+    
 	librdf_statement *copy;
 	copy = librdf_new_statement_from_statement(wrappedObject);
 	return [[[self class] alloc] initWithWrappedObject:copy];
