@@ -23,7 +23,7 @@ export PREFIX
 
 export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:/usr/local/lib/pkgconfig:/usr/lib/pkgconfig"
 
-export CFLAGS="-std=c99 $ARCH -pipe -I$PREFIX/include"
+export CFLAGS="-O3 -std=c99 $ARCH -pipe -I$PREFIX/include"
 export CPPFLAGS="$CFLAGS"
 export CXXFLAGS="$CFLAGS"
 
