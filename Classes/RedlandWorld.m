@@ -5,6 +5,7 @@
 //
 //  Copyright 2004 Rene Puls <http://purl.org/net/kianga/>
 //	Copyright 2012 Pascal Pfiffner <http://www.chip.org/>
+//  Copyright 2016 Ivano Bilenchi <http://ivanobilenchi.com/>
 //
 //  This file is available under the following three licenses:
 //   1. GNU Lesser General Public License (LGPL), version 2.1
@@ -24,6 +25,7 @@
 
 #import "RedlandWorld.h"
 #import "RedlandNamespace.h"
+#import "RedlandError.h"
 #import "RedlandException.h"
 #import "RedlandURI.h"
 #import "RedlandNode.h"
@@ -175,49 +177,47 @@ static int redland_log_handler(void *user_data, librdf_log_message *message)
 #pragma mark - Error Handling
 /**
  *  Adds an librdf_log_message to the internal storedErrors array.
- *  Errors are collected until -[RedlandWorld handleStoredErrors] is called, which then throws an exception with all collected errors.
+ *  Errors are collected until -[RedlandWorld cumulativeError] is called, which then returns an error with all collected errors.
  *  
  *  @param aMessage A librdf_log_message pointer.
  *  @warning Behavior of this method is subject to change. Do not use.
  */
 - (int)handleLogMessage:(librdf_log_message *)aMessage
 {
-    NSString *message = [NSString stringWithUTF8String:aMessage->message];
+    NSString *message = [NSString stringWithUTF8String:aMessage->message] ?: @"";
     NSDictionary *infoDict = [[NSDictionary alloc] initWithObjectsAndKeys:
-                              (message ?: @""), @"message",
+                              message, @"message",
 							  [NSNumber numberWithInt:aMessage->level], @"level",
 							  [NSNumber numberWithInt:aMessage->facility], @"facility",
 							  [NSValue valueWithPointer:aMessage->locator], @"locator",
 							  nil];
 	if ([self logsErrors]) {
-		NSLog(@"Redland Error %d: %@", aMessage->code, infoDict);
+		NSLog(@"Redland Library Error %d: %@", aMessage->code, infoDict);
 	}
-    [self.storedErrors addObject:[NSError errorWithDomain:RedlandErrorDomain
-                                                code:aMessage->code 
-                                            userInfo:infoDict]];
+    [self.storedErrors addObject:[NSError redlandLibraryErrorWithCode:(NSInteger)aMessage->code
+                                                 localizedDescription:message
+                                                             userInfo:infoDict]];
     
     return 1;
 }
 
 /**
- *  Checks if there are any collected errors, in which case it throws an exception with the error array inside userInfo dictionary.
+ *  Checks if there are any collected errors, in which case it returns a NSError object with an error array inside userInfo dictionary.
  *  @warning Behavior of this method is subject to change. Do not use.
  */
-- (void)handleStoredErrors
+- (NSError *)cumulativeError
 {
-    NSArray *errorArray;
-    NSException *exception;
+    NSError *cumulativeError = nil;
+    NSMutableArray *storedErrors = self.storedErrors;
     
-    if (0 == [_storedErrors count]) {
-        return;
+    if (storedErrors.count) {
+        cumulativeError = [NSError redlandWrapperErrorWithCode:RedlandWrapperErrorCodeCumulative
+                                          localizedDescription:@"Cumulative error"
+                                                      userInfo:@{ @"storedErrors": [NSArray arrayWithArray:storedErrors] }];
+        [storedErrors removeAllObjects];
 	}
     
-    errorArray = [[NSArray alloc] initWithArray:_storedErrors];
-    exception = [RedlandException exceptionWithName:RedlandExceptionName
-                                             reason:@"Redland Exception"
-                                           userInfo:@{ @"storedErrors": errorArray }];
-    [_storedErrors removeAllObjects];
-    [exception raise];
+    return cumulativeError;
 }
 
 

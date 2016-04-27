@@ -5,6 +5,7 @@
 //
 //  Copyright 2004 Rene Puls <http://purl.org/net/kianga/>
 //	Copyright 2012 Pascal Pfiffner <http://www.chip.org/>
+//  Copyright 2016 Ivano Bilenchi <http://ivanobilenchi.com/>
 //
 //  This file is available under the following three licenses:
 //   1. GNU Lesser General Public License (LGPL), version 2.1
@@ -48,20 +49,20 @@
 
 - (RedlandStorage *)storage;
 
-- (void)addStatement:(RedlandStatement *)aStatement;
-- (void)addStatementsFromStream:(RedlandStream *)aStream;
-- (void)addStatement:(RedlandStatement *)aStatement withContext:(RedlandNode *)contextNode;
-- (void)addStatementsFromStream:(RedlandStream *)aStream withContext:(RedlandNode *)contextNode;
+- (BOOL)addStatement:(RedlandStatement *)aStatement error:(NSError *__autoreleasing *)error;
+- (BOOL)addStatementsFromStream:(RedlandStream *)aStream error:(NSError *__autoreleasing *)error;
+- (BOOL)addStatement:(RedlandStatement *)aStatement withContext:(RedlandNode *)contextNode error:(NSError *__autoreleasing *)error;
+- (BOOL)addStatementsFromStream:(RedlandStream *)aStream withContext:(RedlandNode *)contextNode error:(NSError *__autoreleasing *)error;
 
 - (BOOL)containsStatement:(RedlandStatement *)aStatement;
 - (BOOL)removeStatement:(RedlandStatement *)aStatement;
 - (BOOL)removeStatement:(RedlandStatement *)aStatement withContext:(RedlandNode *)contextNode;
 - (void)removeStatementsLike:(RedlandStatement *)aStatement;
-- (void)removeAllStatementsWithContext:(RedlandNode *)contextNode;
+- (BOOL)removeAllStatementsWithContext:(RedlandNode *)contextNode error:(NSError *__autoreleasing *)error;
 
 - (BOOL)containsContext:(RedlandNode *)contextNode;
 
-- (RedlandModel *)submodelForSubject:(RedlandNode *)aSubject;
+- (RedlandModel *)submodelForSubject:(RedlandNode *)aSubject error:(NSError *__autoreleasing *)error;
 - (BOOL)addSubmodel:(RedlandModel *)submodel;
 - (BOOL)removeSubmodel:(RedlandModel *)submodel;
 - (NSArray *)statementsLike:(RedlandStatement *)aStatement withDescendants:(BOOL)recursive;
@@ -87,7 +88,7 @@
 
 
 - (RedlandNode *)valueOfFeature:(id)featureURI;
-- (void)setValue:(RedlandNode *)featureValue ofFeature:(id)featureURI;
+- (BOOL)setValue:(RedlandNode *)featureValue ofFeature:(id)featureURI error:(NSError *__autoreleasing *)error;
 
 
 @end

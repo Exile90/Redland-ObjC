@@ -5,6 +5,7 @@
 //
 //  Copyright 2004 Rene Puls <http://purl.org/net/kianga/>
 //	Copyright 2012 Pascal Pfiffner <http://www.chip.org/>
+//  Copyright 2016 Ivano Bilenchi <http://ivanobilenchi.com/>
 //
 //  This file is available under the following three licenses:
 //   1. GNU Lesser General Public License (LGPL), version 2.1
@@ -28,6 +29,7 @@
 #import "RedlandModel.h"
 #import "RedlandURI.h"
 #import "RedlandStream.h"
+#import "RedlandError.h"
 #import "RedlandException.h"
 #import "RedlandNode.h"
 
@@ -127,15 +129,18 @@ NSString * const RedlandRelativeURIsFeature = @"http://feature.librdf.org/raptor
 #pragma mark - Parsing
 /**
  *  Tries to parse the specified string into aModel using baseURI as the base URI.
- *  @warning Raises a RedlandException if there is a parse error or if "aModel" or "uri" is missing.
  *  @param aString The string to parse
  *  @param aModel The model to parse into; required
  *  @param uri The base URI
+ *  @param error Error out parameter
+ *  @return YES on success
  */
-- (void)parseString:(NSString *)aString intoModel:(RedlandModel *)aModel withBaseURI:(RedlandURI *)uri
+- (BOOL)parseString:(NSString *)aString intoModel:(RedlandModel *)aModel withBaseURI:(RedlandURI *)uri error:(NSError *__autoreleasing *)error
 {
-	if ([aString length] < 1) {
-		return;
+    NSError *localError = nil;
+    
+	if (!aString.length) {
+        goto err;
 	}
 	
 	NSParameterAssert(aModel != nil);
@@ -145,48 +150,76 @@ NSString * const RedlandRelativeURIsFeature = @"http://feature.librdf.org/raptor
 													   (unsigned char *)[aString UTF8String],
 													   [uri wrappedURI],
 													   [aModel wrappedModel]);
-	[[RedlandWorld defaultWorld] handleStoredErrors];
+    
+    localError = [[RedlandWorld defaultWorld] cumulativeError];
+    if (localError) {
+        goto err;
+    }
+    
 	if (result != 0) {
-		@throw [RedlandException exceptionWithName:RedlandExceptionName
-											reason:@"librdf_parser_parse_string_into_model failed"
-										  userInfo:nil];
+        localError = [NSError redlandWrapperErrorWithCode:RedlandWrapperErrorCodeGeneric
+                                     localizedDescription:@"librdf_parser_parse_string_into_model failed"];
+        goto err;
 	}
+    
+err:
+    if (error) {
+        *error = localError;
+    }
+    
+    return !localError;
 }
 
 /**
  *  Tries to parse the specified string using baseURI as the base URI and returns a RedlandStream of statements.
- *  @warning Raises a RedlandException if there is a parse error.
  *  @param aString The string to parse
  *  @param uri The base URI
+ *  @param error Error out parameter
  *  @return A RedlandStream instance
  */
-- (RedlandStream *)parseString:(NSString *)aString asStreamWithBaseURI:(RedlandURI *)uri
+- (RedlandStream *)parseString:(NSString *)aString asStreamWithBaseURI:(RedlandURI *)uri error:(NSError *__autoreleasing *)error
 {
-	if ([aString length] < 1) {
-		return nil;
+    NSError *localError = nil;
+    librdf_stream *stream = NULL;
+    
+	if (!aString.length) {
+        goto err;
 	}
 	
 	NSParameterAssert(uri != nil);
 	
-	librdf_stream *stream = librdf_parser_parse_string_as_stream(wrappedObject,
-																 (unsigned char *)[aString UTF8String],
-																 [uri wrappedURI]);
-	[[RedlandWorld defaultWorld] handleStoredErrors];
-	return [[RedlandStream alloc] initWithWrappedObject:stream];
+    stream = librdf_parser_parse_string_as_stream(wrappedObject,
+                                                  (unsigned char *)[aString UTF8String],
+                                                  [uri wrappedURI]);
+	
+    localError = [[RedlandWorld defaultWorld] cumulativeError];
+    if (localError) {
+        goto err;
+    }
+    
+err:
+    if (error) {
+        *error = localError;
+    }
+    
+    return localError ? nil : [[RedlandStream alloc] initWithWrappedObject:stream];
 }
 
 /**
  *  Tries to parse data into a model using the given base URI.
- *  @warning Raises a RedlandException if there is a parse error.
  *  @param data The data to parse as NSData
  *  @param aModel The model to parse into; required
  *  @param baseURI The base URI
+ *  @param error Error out parameter
+ *  @return YES on success
  */
-- (void)parseData:(NSData *)data intoModel:(RedlandModel *)aModel withBaseURI:(RedlandURI *)baseURI
+- (BOOL)parseData:(NSData *)data intoModel:(RedlandModel *)aModel withBaseURI:(RedlandURI *)baseURI error:(NSError *__autoreleasing *)error
 {
 	NSParameterAssert(data != nil);
 	NSParameterAssert(aModel != nil);
 	NSParameterAssert(baseURI != nil);
+    
+    NSError *localError = nil;
 	
 	int result = librdf_parser_parse_counted_string_into_model(wrappedObject,
 															   [data bytes],
@@ -194,20 +227,31 @@ NSString * const RedlandRelativeURIsFeature = @"http://feature.librdf.org/raptor
 															   [baseURI wrappedURI],
 															   [aModel wrappedModel]);
 	if (result != 0) {
-		@throw [RedlandException exceptionWithName:RedlandExceptionName
-											reason:@"librdf_parser_parse_counted_string_into_model failed"
-										  userInfo:nil];
+        localError = [NSError redlandWrapperErrorWithCode:RedlandWrapperErrorCodeGeneric
+                                     localizedDescription:@"librdf_parser_parse_counted_string_into_model failed"];
+        goto err;
 	}
-	[[RedlandWorld defaultWorld] handleStoredErrors];
+    
+    localError = [[RedlandWorld defaultWorld] cumulativeError];
+    if (localError) {
+        goto err;
+    }
+    
+err:
+    if (error) {
+        *error = localError;
+    }
+    
+    return !localError;
 }
 
 /**
  *  Tries to parse data using the given base URI and returns a RedlandStream of statements.
- *  @warning Raises a RedlandException if there is a parse error.
  *  @param data The data to parse as NSData
  *  @param baseURI The base URI
+ *  @param error Error out parameter
  */
-- (RedlandStream *)parseData:(NSData *)data asStreamWithBaseURI:(RedlandURI *)baseURI
+- (RedlandStream *)parseData:(NSData *)data asStreamWithBaseURI:(RedlandURI *)baseURI error:(NSError *__autoreleasing *)error
 {
 	NSParameterAssert(data != nil);
 	NSParameterAssert(baseURI != nil);
@@ -216,8 +260,13 @@ NSString * const RedlandRelativeURIsFeature = @"http://feature.librdf.org/raptor
 																		 [data bytes],
 																		 [data length],
 																		 [baseURI wrappedURI]);
-	[[RedlandWorld defaultWorld] handleStoredErrors];
-	return [[RedlandStream alloc] initWithWrappedObject:stream];
+    
+    NSError *localError = [[RedlandWorld defaultWorld] cumulativeError];
+    if (error) {
+        *error = localError;
+    }
+    
+    return localError ? nil : [[RedlandStream alloc] initWithWrappedObject:stream];
 }
 
 
@@ -329,9 +378,10 @@ NSString * const RedlandRelativeURIsFeature = @"http://feature.librdf.org/raptor
 			parser = [RedlandParser parserWithName:RedlandRDFXMLParserName];
 		}
 		NSAssert(parser != nil, @"Cannot create parser");
-		RedlandStream *stream = [parser parseData:data asStreamWithBaseURI:[RedlandURI URIWithURL:aURL]];
+		RedlandStream *stream = [parser parseData:data asStreamWithBaseURI:[RedlandURI URIWithURL:aURL] error:NULL];
 		NSAssert(stream != nil, @"Parser did not return a stream");
-		[self addStatementsFromStream:stream withContext:context];
+		BOOL success = [self addStatementsFromStream:stream withContext:context error:NULL];
+        NSAssert(success, @"Cannot add statements to parser");
 	}
 	@finally {
 		request = nil;

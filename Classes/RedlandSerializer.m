@@ -5,6 +5,7 @@
 //
 //  Copyright 2004 Rene Puls <http://purl.org/net/kianga/>
 //	Copyright 2012 Pascal Pfiffner <http://www.chip.org/>
+//  Copyright 2016 Ivano Bilenchi <http://ivanobilenchi.com/>
 //
 //  This file is available under the following three licenses:
 //   1. GNU Lesser General Public License (LGPL), version 2.1
@@ -30,6 +31,7 @@
 #import "RedlandWorld.h"
 #import "RedlandModel.h"
 #import "RedlandURI.h"
+#import "RedlandError.h"
 #import "RedlandException.h"
 #import "RedlandNode.h"
 #include <stdio.h>
@@ -119,22 +121,37 @@ NSString * const RedlandRSS10Serializer = @"rss-1.0";
  *  @param aModel The model (RedlandModel instance) to serialize
  *  @param fileName the filename to write to as NSString
  *  @param aURI The base-URI to use as RedlandURI
+ *  @param error Error out parameter
+ *  @return YES on success
  */
-- (void)serializeModel:(RedlandModel *)aModel toFileName:(NSString *)fileName withBaseURI:(RedlandURI *)aURI
+- (BOOL)serializeModel:(RedlandModel *)aModel toFileName:(NSString *)fileName withBaseURI:(RedlandURI *)aURI error:(NSError *__autoreleasing *)error
 {
 	NSParameterAssert(aModel != nil);
 	NSParameterAssert(fileName != nil);
+    
+    NSError *localError = nil;
 	
 	int result = librdf_serializer_serialize_model_to_file(wrappedObject,
 														   [fileName cStringUsingEncoding:NSUTF8StringEncoding],
 														   [aURI wrappedURI],
 														   [aModel wrappedModel]);
 	if (result != 0) {
-		@throw [RedlandException exceptionWithName:RedlandExceptionName
-											reason:@"librdf_serializer_serialize_model_to_file failed"
-										  userInfo:nil];
+        localError = [NSError redlandWrapperErrorWithCode:RedlandWrapperErrorCodeGeneric
+                                     localizedDescription:@"librdf_serializer_serialize_model_to_file failed"];
+        goto err;
 	}
-	[[RedlandWorld defaultWorld] handleStoredErrors];
+    
+    localError = [[RedlandWorld defaultWorld] cumulativeError];
+    if (localError) {
+        goto err;
+    }
+    
+err:
+    if (error) {
+        *error = localError;
+    }
+    
+    return !localError;
 }
 
 /**
@@ -142,22 +159,37 @@ NSString * const RedlandRSS10Serializer = @"rss-1.0";
  *  @param aModel The model (RedlandModel instance) to serialize
  *  @param file the C file handle
  *  @param aURI The base-URI to use as RedlandURI
+ *  @param error Error out parameter
+ *  @return YES on success
  */
-- (void)serializeModel:(RedlandModel *)aModel toFile:(FILE *)file withBaseURI:(RedlandURI *)aURI
+- (BOOL)serializeModel:(RedlandModel *)aModel toFile:(FILE *)file withBaseURI:(RedlandURI *)aURI error:(NSError *__autoreleasing *)error
 {
 	NSParameterAssert(aModel != nil);
 	NSParameterAssert(file != NULL);
+    
+    NSError *localError = nil;
 	
 	int result = librdf_serializer_serialize_model_to_file_handle(wrappedObject,
 																  file,
 																  [aURI wrappedURI],
 																  [aModel wrappedModel]);
 	if (result != 0) {
-		@throw [RedlandException exceptionWithName:RedlandExceptionName
-											reason:@"librdf_serializer_serialize_model_to_file_handle failed"
-										  userInfo:nil];
+        localError = [NSError redlandWrapperErrorWithCode:RedlandWrapperErrorCodeGeneric
+                                     localizedDescription:@"librdf_serializer_serialize_model_to_file_handle failed"];
+        goto err;
 	}
-	[[RedlandWorld defaultWorld] handleStoredErrors];
+    
+    localError = [[RedlandWorld defaultWorld] cumulativeError];
+    if (localError) {
+        goto err;
+    }
+    
+err:
+    if (error) {
+        *error = localError;
+    }
+    
+    return !localError;
 }
 
 /**
@@ -165,31 +197,48 @@ NSString * const RedlandRSS10Serializer = @"rss-1.0";
  *  @param aModel The model (RedlandModel instance) to serialize
  *  @param fileHandle the filehandle as NSFileHandle to write to
  *  @param aURI The base-URI to use as RedlandURI
+ *  @param error Error out parameter
+ *  @return YES on success
  */
-- (void)serializeModel:(RedlandModel *)aModel toFileHandle:(NSFileHandle *)fileHandle withBaseURI:(RedlandURI *)aURI
+- (BOOL)serializeModel:(RedlandModel *)aModel toFileHandle:(NSFileHandle *)fileHandle withBaseURI:(RedlandURI *)aURI error:(NSError *__autoreleasing *)error
 {
 	NSParameterAssert(aModel != nil);
 	NSParameterAssert(fileHandle != nil);
 	
 	int fd = dup([fileHandle fileDescriptor]);
 	FILE *handle = fdopen(fd, "w");
+    NSError *localError = nil;
+    
 	if (handle == NULL) {
 		close(fd);
-		@throw [RedlandException exceptionWithName:RedlandExceptionName
-											reason:@"fdopen of file descriptor failed"
-										  userInfo:nil];
+        localError = [NSError redlandWrapperErrorWithCode:RedlandWrapperErrorCodeGeneric
+                                     localizedDescription:@"fdopen of file descriptor failed"];
+        goto err;
 	}
+    
 	int result = librdf_serializer_serialize_model_to_file_handle(wrappedObject,
 																  handle,
 																  [aURI wrappedURI],
 																  [aModel wrappedModel]);
-	fclose(handle);
 	if (result != 0) {
-		@throw [RedlandException exceptionWithName:RedlandExceptionName
-											reason:@"librdf_serializer_serialize_model_to_file_handle failed"
-										  userInfo:nil];
+        localError = [NSError redlandWrapperErrorWithCode:RedlandWrapperErrorCodeGeneric
+                                     localizedDescription:@"librdf_serializer_serialize_model_to_file_handle failed"];
+        goto err;
 	}
-	[[RedlandWorld defaultWorld] handleStoredErrors];
+    
+    localError = [[RedlandWorld defaultWorld] cumulativeError];
+    if (localError) {
+        goto err;
+    }
+    
+err:
+    fclose(handle);
+    
+    if (error) {
+        *error = localError;
+    }
+    
+    return !localError;
 }
 
 /**
@@ -273,34 +322,46 @@ NSString * const RedlandRSS10Serializer = @"rss-1.0";
  *  Returns a serialized string representation of a model using the given base URI.
  *  @param aModel The model (RedlandModel instance) to serialize
  *  @param baseURI The base-URI to use as RedlandURI
+ *  @param error Error out parameter
  *  @return An NSString
  */
-- (NSString *)serializedStringFromModel:(RedlandModel *)aModel withBaseURI:(RedlandURI *)baseURI
+- (NSString *)serializedStringFromModel:(RedlandModel *)aModel withBaseURI:(RedlandURI *)baseURI error:(NSError *__autoreleasing *)error
 {
 	NSParameterAssert(aModel != nil);
 	
 	size_t len;
 	unsigned char *result = librdf_serializer_serialize_model_to_counted_string(wrappedObject, [baseURI wrappedURI], [aModel wrappedModel], &len);
-	[[RedlandWorld defaultWorld] handleStoredErrors];
 	
-	return [[NSString alloc] initWithBytesNoCopy:result length:len encoding:NSUTF8StringEncoding freeWhenDone:YES];
+    NSError *localError = [[RedlandWorld defaultWorld] cumulativeError];
+    
+    if (error) {
+        *error = localError;
+    }
+	
+    return localError ? nil : [[NSString alloc] initWithBytesNoCopy:result length:len encoding:NSUTF8StringEncoding freeWhenDone:YES];
 }
 
 /**
  *  Returns a serialized data representation of a model using the given base URI.
  *  @param aModel The model (RedlandModel instance) to serialize
  *  @param baseURI The base-URI to use as RedlandURI
+ *  @param error Error out parameter
  *  @return NSData
  */
-- (NSData *)serializedDataFromModel:(RedlandModel *)aModel withBaseURI:(RedlandURI *)baseURI
+- (NSData *)serializedDataFromModel:(RedlandModel *)aModel withBaseURI:(RedlandURI *)baseURI error:(NSError *__autoreleasing *)error
 {
 	NSParameterAssert(aModel != nil);
 	
 	size_t len;
 	unsigned char *result = librdf_serializer_serialize_model_to_counted_string(wrappedObject, [baseURI wrappedURI], [aModel wrappedModel], &len);
-	[[RedlandWorld defaultWorld] handleStoredErrors];
 	
-	return [[NSData alloc] initWithBytesNoCopy:result length:len freeWhenDone:YES];
+    NSError *localError = [[RedlandWorld defaultWorld] cumulativeError];
+    
+    if (error) {
+        *error = localError;
+    }
+	
+    return localError ? nil : [[NSData alloc] initWithBytesNoCopy:result length:len freeWhenDone:YES];
 }
 
 
@@ -312,12 +373,13 @@ NSString * const RedlandRSS10Serializer = @"rss-1.0";
 /**
  *  Returns an RDF/XML serialization of the receiver using the given base URI.
  *  @param baseURI The base-URI to use as RedlandURI
+ *  @param error Error out parameter
  *  @return NSData
  */
-- (NSData *)serializedRDFXMLDataWithBaseURI:(RedlandURI *)baseURI
+- (NSData *)serializedRDFXMLDataWithBaseURI:(RedlandURI *)baseURI error:(NSError *__autoreleasing *)error
 {
 	RedlandSerializer *serializer = [RedlandSerializer serializerWithName:RedlandRDFXMLSerializerName];
-	return [serializer serializedDataFromModel:self withBaseURI:baseURI];
+	return [serializer serializedDataFromModel:self withBaseURI:baseURI error:error];
 }
 
 @end

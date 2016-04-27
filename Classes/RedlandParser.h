@@ -5,6 +5,7 @@
 //
 //  Copyright 2004 Rene Puls <http://purl.org/net/kianga/>
 //	Copyright 2012 Pascal Pfiffner <http://www.chip.org/>
+//  Copyright 2016 Ivano Bilenchi <http://ivanobilenchi.com/>
 //
 //  This file is available under the following three licenses:
 //   1. GNU Lesser General Public License (LGPL), version 2.1
@@ -59,11 +60,11 @@ extern NSString * const RedlandRelativeURIsFeature;
 
 - (librdf_parser *)wrappedParser;
 
-- (void)parseData:(NSData *)data intoModel:(RedlandModel *)aModel withBaseURI:(RedlandURI *)baseURI;
-- (RedlandStream *)parseData:(NSData *)data asStreamWithBaseURI:(RedlandURI *)baseURI;
+- (BOOL)parseData:(NSData *)data intoModel:(RedlandModel *)aModel withBaseURI:(RedlandURI *)baseURI error:(NSError *__autoreleasing *)error;
+- (RedlandStream *)parseData:(NSData *)data asStreamWithBaseURI:(RedlandURI *)baseURI error:(NSError *__autoreleasing *)error;
 
-- (void)parseString:(NSString *)aString intoModel:(RedlandModel *)aModel withBaseURI:(RedlandURI *)baseURI;
-- (RedlandStream *)parseString:(NSString *)aString asStreamWithBaseURI:(RedlandURI *)anURI;
+- (BOOL)parseString:(NSString *)aString intoModel:(RedlandModel *)aModel withBaseURI:(RedlandURI *)uri error:(NSError *__autoreleasing *)error;
+- (RedlandStream *)parseString:(NSString *)aString asStreamWithBaseURI:(RedlandURI *)anURI error:(NSError *__autoreleasing *)error;
 
 - (RedlandNode *)valueOfFeature:(id)featureURI;
 - (void)setValue:(RedlandNode *)featureValue ofFeature:(id)featureURI;

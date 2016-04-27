@@ -61,6 +61,10 @@
 		CC257FB51C612E5000342004 /* librdf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CC257FB41C612E5000342004 /* librdf.a */; };
 		CC257FB71C612E6E00342004 /* librasqal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CC257FB61C612E6E00342004 /* librasqal.a */; };
 		CC257FB91C612E7E00342004 /* libraptor2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CC257FB81C612E7E00342004 /* libraptor2.a */; };
+		CC3C970A1CC7DCE700169502 /* RedlandError.h in Headers */ = {isa = PBXBuildFile; fileRef = CC3C97081CC7DCE700169502 /* RedlandError.h */; };
+		CC3C970B1CC7DCE700169502 /* RedlandError.h in Headers */ = {isa = PBXBuildFile; fileRef = CC3C97081CC7DCE700169502 /* RedlandError.h */; };
+		CC3C970C1CC7DCE700169502 /* RedlandError.m in Sources */ = {isa = PBXBuildFile; fileRef = CC3C97091CC7DCE700169502 /* RedlandError.m */; };
+		CC3C970D1CC7DCE700169502 /* RedlandError.m in Sources */ = {isa = PBXBuildFile; fileRef = CC3C97091CC7DCE700169502 /* RedlandError.m */; };
 		CCAD978C1C61326800121D1D /* libxml2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = CCAD978B1C61326800121D1D /* libxml2.tbd */; };
 		CCAD97941C61336500121D1D /* libcrypto.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = CCAD97921C61330700121D1D /* libcrypto.tbd */; };
 		CCAD97951C61337100121D1D /* libcurl.3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = CCAD97901C6132FB00121D1D /* libcurl.3.tbd */; };
@@ -298,6 +302,8 @@
 		CC257FB41C612E5000342004 /* librdf.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librdf.a; path = "Redland-source/Universal-iOS-Sim/librdf.a"; sourceTree = "<group>"; };
 		CC257FB61C612E6E00342004 /* librasqal.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librasqal.a; path = "Redland-source/Universal-iOS-Sim/librasqal.a"; sourceTree = "<group>"; };
 		CC257FB81C612E7E00342004 /* libraptor2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libraptor2.a; path = "Redland-source/Universal-iOS-Sim/libraptor2.a"; sourceTree = "<group>"; };
+		CC3C97081CC7DCE700169502 /* RedlandError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RedlandError.h; sourceTree = "<group>"; };
+		CC3C97091CC7DCE700169502 /* RedlandError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RedlandError.m; sourceTree = "<group>"; };
 		CCAD97871C61319A00121D1D /* libxslt.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxslt.tbd; path = usr/lib/libxslt.tbd; sourceTree = SDKROOT; };
 		CCAD97891C6131CF00121D1D /* libxslt.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxslt.tbd; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.2.sdk/usr/lib/libxslt.tbd; sourceTree = DEVELOPER_DIR; };
 		CCAD978B1C61326800121D1D /* libxml2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.tbd; path = usr/lib/libxml2.tbd; sourceTree = SDKROOT; };
@@ -587,6 +593,8 @@
 				ED8D25510688A6350039DA12 /* RedlandStorage.m */,
 				ED11265C069DD654006F17FD /* RedlandException.h */,
 				ED11265D069DD654006F17FD /* RedlandException.m */,
+				CC3C97081CC7DCE700169502 /* RedlandError.h */,
+				CC3C97091CC7DCE700169502 /* RedlandError.m */,
 			);
 			name = "Basic Wrapper Classes";
 			path = Classes;
@@ -879,6 +887,7 @@
 				EE74749315B902E7004A456E /* (null) in Headers */,
 				EE74749415B902E7004A456E /* (null) in Headers */,
 				EE74749515B902E7004A456E /* (null) in Headers */,
+				CC3C970A1CC7DCE700169502 /* RedlandError.h in Headers */,
 				EE74749615B902E7004A456E /* (null) in Headers */,
 				EE74749715B902E7004A456E /* (null) in Headers */,
 				EE74749815B902E7004A456E /* (null) in Headers */,
@@ -921,6 +930,7 @@
 				EEE7B4B415C84F86004D5A68 /* rdf_utf8.h in Headers */,
 				EE555EEE15C8EFF100F26A1A /* RedlandException.h in Headers */,
 				EE555EEF15C8EFF500F26A1A /* RedlandModel-Convenience.h in Headers */,
+				CC3C970B1CC7DCE700169502 /* RedlandError.h in Headers */,
 				EE555EF015C8EFFA00F26A1A /* RedlandNode-Convenience.h in Headers */,
 				EE555EF115C8EFFE00F26A1A /* RedlandStreamEnumerator.h in Headers */,
 				EE555EF215C8F00200F26A1A /* RedlandIteratorEnumerator.h in Headers */,
@@ -1151,6 +1161,7 @@
 				EDB09CA20688CF300071464A /* RedlandIterator.m in Sources */,
 				EDB09D2D0688D50F0071464A /* RedlandIteratorEnumerator.m in Sources */,
 				EDAC616706943C75007A085A /* RedlandStreamEnumerator.m in Sources */,
+				CC3C970C1CC7DCE700169502 /* RedlandError.m in Sources */,
 				EDAC63840694506E007A085A /* RedlandNamespace.m in Sources */,
 				ED11265F069DD654006F17FD /* RedlandException.m in Sources */,
 				ED486C9606DA6F7900AA6058 /* RedlandQuery.m in Sources */,
@@ -1212,6 +1223,7 @@
 				EEE7B48215C8499F004D5A68 /* RedlandParser.m in Sources */,
 				EEE7B48315C8499F004D5A68 /* RedlandSerializer.m in Sources */,
 				EEE7B48415C8499F004D5A68 /* RedlandQuery.m in Sources */,
+				CC3C970D1CC7DCE700169502 /* RedlandError.m in Sources */,
 				EEE7B48515C8499F004D5A68 /* RedlandQueryResults.m in Sources */,
 				EEE7B48615C849B3004D5A68 /* RedlandException.m in Sources */,
 				EEE7B48715C849B3004D5A68 /* RedlandModel-Convenience.m in Sources */,

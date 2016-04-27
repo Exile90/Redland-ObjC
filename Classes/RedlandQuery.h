@@ -5,6 +5,7 @@
 //
 //  Copyright 2004 Rene Puls <http://purl.org/net/kianga/>
 //	Copyright 2012 Pascal Pfiffner <http://www.chip.org/>
+//  Copyright 2016 Ivano Bilenchi <http://ivanobilenchi.com/>
 //
 //  This file is available under the following three licenses:
 //   1. GNU Lesser General Public License (LGPL), version 2.1
@@ -40,15 +41,29 @@ extern NSString * const RedlandSPARQLLanguageName;				///< The name of the SPARQ
 @property (nonatomic, assign) int limit;
 @property (nonatomic, assign) int offset;
 
-+ (id)queryWithLanguageName:(NSString *)langName queryString:(NSString *)queryString baseURI:(RedlandURI *)baseURI;
-+ (id)queryWithLanguageName:(NSString *)langName languageURI:(RedlandURI *)uri queryString:(NSString *)queryString baseURI:(RedlandURI *)baseURI;
++ (id)queryWithLanguageName:(NSString *)langName
+                queryString:(NSString *)queryString
+                    baseURI:(RedlandURI *)baseURI
+                      error:(NSError *__autoreleasing *)error;
++ (id)queryWithLanguageName:(NSString *)langName
+                languageURI:(RedlandURI *)uri
+                queryString:(NSString *)queryString
+                    baseURI:(RedlandURI *)baseURI
+                      error:(NSError *__autoreleasing *)error;
 
-- (id)initWithLanguageName:(NSString *)langName queryString:(NSString *)queryString baseURI:(RedlandURI *)baseURI;
-- (id)initWithLanguageName:(NSString *)langName languageURI:(RedlandURI *)uri queryString:(NSString *)queryString baseURI:(RedlandURI *)baseURI;
+- (id)initWithLanguageName:(NSString *)langName
+               queryString:(NSString *)queryString
+                   baseURI:(RedlandURI *)baseURI
+                     error:(NSError *__autoreleasing *)error;
+- (id)initWithLanguageName:(NSString *)langName
+               languageURI:(RedlandURI *)uri
+               queryString:(NSString *)queryString
+                   baseURI:(RedlandURI *)baseURI
+                     error:(NSError *__autoreleasing *)error;
 
 - (librdf_query *)wrappedQuery;
 
-- (RedlandQueryResults *)executeOnModel:(RedlandModel *)aModel;
+- (RedlandQueryResults *)executeOnModel:(RedlandModel *)aModel error:(NSError *__autoreleasing *)error;
 
 
 @end

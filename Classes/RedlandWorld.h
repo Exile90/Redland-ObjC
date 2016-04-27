@@ -5,6 +5,7 @@
 //
 //  Copyright 2004 Rene Puls <http://purl.org/net/kianga/>
 //	Copyright 2012 Pascal Pfiffner <http://www.chip.org/>
+//  Copyright 2016 Ivano Bilenchi <http://ivanobilenchi.com/>
 //
 //  This file is available under the following three licenses:
 //   1. GNU Lesser General Public License (LGPL), version 2.1
@@ -46,7 +47,7 @@
 - (librdf_world *)wrappedWorld;
 
 - (int)handleLogMessage:(librdf_log_message *)aMessage;
-- (void)handleStoredErrors;
+- (NSError *)cumulativeError;
 
 - (RedlandNode *)valueOfFeature:(id)featureURI;
 - (void)setValue:(RedlandNode *)featureValue ofFeature:(id)featureURI;

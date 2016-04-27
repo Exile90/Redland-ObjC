@@ -5,6 +5,7 @@
 //
 //  Copyright 2004 Rene Puls <http://purl.org/net/kianga/>
 //	Copyright 2012 Pascal Pfiffner <http://www.chip.org/>
+//  Copyright 2016 Ivano Bilenchi <http://ivanobilenchi.com/>
 //
 //  This file is available under the following three licenses:
 //   1. GNU Lesser General Public License (LGPL), version 2.1
@@ -35,7 +36,7 @@
 #import "RedlandParser.h"
 #import "RedlandSerializer.h"
 #import "RedlandModel-Convenience.h"
-#import "RedlandException.h"
+#import "RedlandError.h"
 
 @implementation RedlandModel
 
@@ -120,73 +121,113 @@
  *  Adds a single statement to the receiver.
  *  Duplicate statements are ignored.
  *  @param aStatement A complete statement (with non-nil subject, predicate, and object)
+ *  @param error Error out parameter
+ *  @return YES on success
  */
-- (void)addStatement:(RedlandStatement *)aStatement
+- (BOOL)addStatement:(RedlandStatement *)aStatement error:(NSError *__autoreleasing *)error
 {
-	librdf_statement *statement;
 	NSParameterAssert(aStatement != nil);
-	statement = librdf_new_statement_from_statement([aStatement wrappedStatement]);
-	if (statement == NULL) {
-		@throw [RedlandException exceptionWithName:RedlandExceptionName
-											reason:@"unable to copy statement"
-										  userInfo:@{ @"statement": aStatement, @"model": self }];
-	}
-	if (librdf_model_add_statement(wrappedObject, statement) != 0) {
-		librdf_free_statement(statement);
-		@throw [RedlandException exceptionWithName:RedlandExceptionName
-											reason:@"librdf_model_add_statement failed"
-										  userInfo:@{ @"statement": aStatement, @"model": self }];
-	}
+    
+    NSError *localError = nil;
+	librdf_statement *statement = librdf_new_statement_from_statement([aStatement wrappedStatement]);
+    
+    if (statement == NULL) {
+        localError = [NSError redlandWrapperErrorWithCode:RedlandWrapperErrorCodeGeneric
+                                     localizedDescription:@"Unable to copy statement"
+                                                 userInfo:@{ @"statement": aStatement, @"model": self }];
+        goto err;
+    }
+    if (librdf_model_add_statement(wrappedObject, statement) != 0) {
+        librdf_free_statement(statement);
+        localError = [NSError redlandWrapperErrorWithCode:RedlandWrapperErrorCodeGeneric
+                                     localizedDescription:@"librdf_model_add_statement failed"
+                                                 userInfo:@{ @"statement": aStatement, @"model": self }];
+        goto err;
+    }
+    
+err:
+    if (error) {
+        *error = localError;
+    }
+    
+    return !localError;
 }
 
 /**
  *  Adds a stream of statements to the receiver.
  *  Duplicate statements are ignored.
  *  @param aStream A stream of complete statements
+ *  @param error Error out parameter
+ *  @return YES on success
  */
-- (void)addStatementsFromStream:(RedlandStream *)aStream
+- (BOOL)addStatementsFromStream:(RedlandStream *)aStream error:(NSError *__autoreleasing *)error
 {
 	NSParameterAssert(aStream != nil);
-	if (librdf_model_add_statements(wrappedObject, [aStream wrappedStream]) != 0) {
-		@throw [RedlandException exceptionWithName:RedlandExceptionName
-											reason:@"librdf_model_add_statements failed"
-										  userInfo:nil];
-	}
+    NSError *localError = nil;
+    
+    if (librdf_model_add_statements(wrappedObject, [aStream wrappedStream]) != 0) {
+        localError = [NSError redlandWrapperErrorWithCode:RedlandWrapperErrorCodeGeneric
+                                     localizedDescription:@"librdf_model_add_statements failed"];
+    }
+    
+    if (error) {
+        *error = localError;
+    }
+    
+    return !localError;
 }
 
 /**
  *  Adds a single statement to the receiver with the given context.
  *  @param aStatement A complete statement
  *  @param contextNode The context to associate this statement with
+ *  @param error Error out parameter
+ *  @return YES on success
  */
-- (void)addStatement:(RedlandStatement *)aStatement withContext:(RedlandNode *)contextNode
+- (BOOL)addStatement:(RedlandStatement *)aStatement withContext:(RedlandNode *)contextNode error:(NSError *__autoreleasing *)error
 {
-	librdf_statement *statement;
 	NSParameterAssert(aStatement != nil);
-	statement = librdf_new_statement_from_statement([aStatement wrappedStatement]);
-	if (librdf_model_context_add_statement(wrappedObject,
-										   [contextNode wrappedNode],
-										   statement) != 0) {
-		librdf_free_statement(statement);
-		@throw [RedlandException exceptionWithName:RedlandExceptionName
-											reason:@"librdf_model_context_add_statement failed"
-										  userInfo:nil];
-	}
+    
+    NSError *localError = nil;
+    librdf_statement *statement = librdf_new_statement_from_statement([aStatement wrappedStatement]);
+    
+    if (librdf_model_context_add_statement(wrappedObject,
+                                           [contextNode wrappedNode],
+                                           statement) != 0) {
+        librdf_free_statement(statement);
+        localError = [NSError redlandWrapperErrorWithCode:RedlandWrapperErrorCodeGeneric
+                                     localizedDescription:@"librdf_model_context_add_statement failed"];
+    }
+    
+    if (error) {
+        *error = localError;
+    }
+    
+    return !localError;
 }
 
 /**
  *  Adds a stream of statements to the receiver in the given context.
  *  @param aStream A stream of complete statements
  *  @param contextNode The context to associate each statement with
+ *  @param error Error out parameter
+ *  @return YES on success
  */
-- (void)addStatementsFromStream:(RedlandStream *)aStream withContext:(RedlandNode *)contextNode
+- (BOOL)addStatementsFromStream:(RedlandStream *)aStream withContext:(RedlandNode *)contextNode error:(NSError *__autoreleasing *)error
 {
 	NSParameterAssert(aStream != nil);
-	if (librdf_model_context_add_statements(wrappedObject, [contextNode wrappedNode], [aStream wrappedStream]) != 0) {
-		@throw [RedlandException exceptionWithName:RedlandExceptionName
-											reason:@"librdf_model_context_add_statements failed"
-										  userInfo:nil];
-	}
+    NSError *localError = nil;
+    
+    if (librdf_model_context_add_statements(wrappedObject, [contextNode wrappedNode], [aStream wrappedStream]) != 0) {
+        localError = [NSError redlandWrapperErrorWithCode:RedlandWrapperErrorCodeGeneric
+                                     localizedDescription:@"librdf_model_context_add_statements failed"];
+    }
+    
+    if (error) {
+        *error = localError;
+    }
+    
+    return !localError;
 }
 
 /**
@@ -246,15 +287,24 @@
 /**
  *  Removes all statements with the given context from the receiver.
  *  @param contextNode The context of the statements to remove
+ *  @param error Error out parameter
+ *  @return YES on success
  */
-- (void)removeAllStatementsWithContext:(RedlandNode *)contextNode
+- (BOOL)removeAllStatementsWithContext:(RedlandNode *)contextNode error:(NSError *__autoreleasing *)error
 {
 	NSParameterAssert(contextNode != nil);
-	if (librdf_model_context_remove_statements(wrappedObject, [contextNode wrappedNode]) != 0) {
-		@throw [RedlandException exceptionWithName:RedlandExceptionName
-											reason:@"librdf_model_context_remove_statements failed"
-										  userInfo:nil];
-	}
+    NSError *localError = nil;
+    
+    if (librdf_model_context_remove_statements(wrappedObject, [contextNode wrappedNode]) != 0) {
+        localError = [NSError redlandWrapperErrorWithCode:RedlandWrapperErrorCodeGeneric
+                                     localizedDescription:@"librdf_model_context_remove_statements failed"];
+    }
+    
+    if (error) {
+        *error = localError;
+    }
+    
+    return !localError;
 }
 
 
@@ -263,21 +313,30 @@
 /**
  *  Creates a sub-model from triples found in the receiver that relate to the given subject node.
  *  @param aSubject The subject node for which to retrieve triples
- *  @return A RedlandModel instance or nil if no subject was provided
+ *  @param error Error out parameter
+ *  @return A RedlandModel instance or nil if no subject was provided, or on error
  */
-- (RedlandModel *)submodelForSubject:(RedlandNode *)aSubject
+- (RedlandModel *)submodelForSubject:(RedlandNode *)aSubject error:(NSError *__autoreleasing *)error
 {
 	if (!aSubject) {
 		return nil;
 	}
 	
+    NSError *localError = nil;
 	RedlandModel *submodel = [RedlandModel modelWithStorage:[RedlandStorage new]];
 	RedlandStatement *query = [RedlandStatement statementWithSubject:aSubject predicate:nil object:nil];
+    
 	for (RedlandStatement *statement in [self statementsLike:query withDescendants:YES]) {
-		[submodel addStatement:statement];
+        if (![submodel addStatement:statement error:&localError]) {
+            break;
+        }
 	}
+    
+    if (error) {
+        *error = localError;
+    }
 	
-	return submodel;
+    return localError ? nil : submodel;
 }
 
 /**
@@ -592,9 +651,10 @@
  *  Sets the model feature identified by featureURI to a new value.
  *  @param featureValue A RedlandNode representing the new value
  *  @param featureURI An NSString or a RedlandURI instance
- *  @warning Raises a RedlandException is no such feature exists.
+ *  @param error Error out parameter
+ *  @return YES on success
  */
-- (void)setValue:(RedlandNode *)featureValue ofFeature:(id)featureURI
+- (BOOL)setValue:(RedlandNode *)featureValue ofFeature:(id)featureURI error:(NSError *__autoreleasing *)error
 {
 	NSParameterAssert(featureURI != nil);
 	
@@ -602,20 +662,24 @@
 		featureURI = [RedlandURI URIWithString:featureURI];
 	}
 	NSAssert([featureURI isKindOfClass:[RedlandURI class]], @"featureURI has invalid class");
-	
+    
+    NSError *localError = nil;
 	int result = librdf_model_set_feature(wrappedObject,
 										  [featureURI wrappedURI],
 										  [featureValue wrappedNode]);
-	if (result > 0) {
-		@throw [RedlandException exceptionWithName:RedlandExceptionName
-											reason:@"librdf_model_set_feature returned >0"
-										  userInfo:nil];
-	}
-	else if (result < 0) {
-		@throw [RedlandException exceptionWithName:RedlandExceptionName
-											reason:@"No such feature"
-										  userInfo:nil];
-	}
+    if (result > 0) {
+        localError = [NSError redlandWrapperErrorWithCode:RedlandWrapperErrorCodeGeneric
+                                     localizedDescription:@"librdf_model_set_feature returned >0"];
+    } else if (result < 0) {
+        localError = [NSError redlandWrapperErrorWithCode:RedlandWrapperErrorCodeGeneric
+                                     localizedDescription:@"No such feature"];
+    }
+    
+    if (error) {
+        *error = localError;
+    }
+    
+    return !localError;
 }
 
 

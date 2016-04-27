@@ -5,6 +5,7 @@
 //
 //  Copyright 2004 Rene Puls <http://purl.org/net/kianga/>
 //	Copyright 2012 Pascal Pfiffner <http://www.chip.org/>
+//  Copyright 2016 Ivano Bilenchi <http://ivanobilenchi.com/>
 //
 //  This file is available under the following three licenses:
 //   1. GNU Lesser General Public License (LGPL), version 2.1
@@ -27,7 +28,7 @@
 #import "RedlandURI.h"
 #import "RedlandQueryResults.h"
 #import "RedlandModel.h"
-#import "RedlandException.h"
+#import "RedlandError.h"
 
 NSString * const RedlandRDQLLanguageName = @"rdql";
 NSString * const RedlandSPARQLLanguageName = @"sparql";
@@ -43,10 +44,11 @@ NSString * const RedlandSPARQLLanguageName = @"sparql";
  *  @param langName The only supported language name is currently the constant `RedlandSPARQLLanguageName`
  *  @param queryString The query string in the given language
  *  @param baseURI The base URI to use
+ *  @param error Error out parameter
  */
-+ (id)queryWithLanguageName:(NSString *)langName queryString:(NSString *)queryString baseURI:(RedlandURI *)baseURI
++ (id)queryWithLanguageName:(NSString *)langName queryString:(NSString *)queryString baseURI:(RedlandURI *)baseURI error:(NSError *__autoreleasing *)error
 {
-	return [[self alloc] initWithLanguageName:langName queryString:queryString baseURI:baseURI];
+	return [[self alloc] initWithLanguageName:langName queryString:queryString baseURI:baseURI error:error];
 }
 
 /**
@@ -55,10 +57,11 @@ NSString * const RedlandSPARQLLanguageName = @"sparql";
  *  @param langURI The URI identifying the requested query language
  *  @param queryString The query string in the given language
  *  @param baseURI The base uri to use
+ *  @param error Error out parameter
  */
-+ (id)queryWithLanguageName:(NSString *)langName languageURI:(RedlandURI *)langURI queryString:(NSString *)queryString baseURI:(RedlandURI *)baseURI
++ (id)queryWithLanguageName:(NSString *)langName languageURI:(RedlandURI *)langURI queryString:(NSString *)queryString baseURI:(RedlandURI *)baseURI error:(NSError *__autoreleasing *)error
 {
-	return [[self alloc] initWithLanguageName:langName languageURI:langURI queryString:queryString baseURI:baseURI];
+	return [[self alloc] initWithLanguageName:langName languageURI:langURI queryString:queryString baseURI:baseURI error:error];
 }
 
 /**
@@ -66,10 +69,11 @@ NSString * const RedlandSPARQLLanguageName = @"sparql";
  *  @param langName The only supported language name is currently the constant `RedlandSPARQLLanguageName`
  *  @param queryString The query string in the given language
  *  @param baseURI The base URI to use
+ *  @param error Error out parameter
  */
-- (id)initWithLanguageName:(NSString *)langName queryString:(NSString *)queryString baseURI:(RedlandURI *)baseURI
+- (id)initWithLanguageName:(NSString *)langName queryString:(NSString *)queryString baseURI:(RedlandURI *)baseURI error:(NSError *__autoreleasing *)error
 {
-	return [self initWithLanguageName:langName languageURI:nil queryString:queryString baseURI:baseURI];
+	return [self initWithLanguageName:langName languageURI:nil queryString:queryString baseURI:baseURI error:error];
 }
 
 /**
@@ -78,11 +82,14 @@ NSString * const RedlandSPARQLLanguageName = @"sparql";
  *  @param langURI The URI identifying the requested query language
  *  @param queryString The query string in the given language
  *  @param baseURI The base uri to use
+ *  @param error Error out parameter
  */
-- (id)initWithLanguageName:(NSString *)langName languageURI:(RedlandURI *)langURI queryString:(NSString *)queryString baseURI:(RedlandURI *)baseURI
+- (id)initWithLanguageName:(NSString *)langName languageURI:(RedlandURI *)langURI queryString:(NSString *)queryString baseURI:(RedlandURI *)baseURI error:(NSError *__autoreleasing *)error
 {
 	NSParameterAssert(langName != nil || langURI != nil);
 	NSParameterAssert(queryString != nil);
+    
+    NSError *localError = nil;
 	
 	librdf_query *newQuery = librdf_new_query([RedlandWorld defaultWrappedWorld],
 											  [langName UTF8String],
@@ -90,13 +97,23 @@ NSString * const RedlandSPARQLLanguageName = @"sparql";
 											  (unsigned char *)[queryString UTF8String],
 											  [baseURI wrappedURI]);
 	if (NULL == newQuery) {
-		@throw [RedlandException exceptionWithName:RedlandExceptionName
-											reason:@"librdf_new_query failed"
-										  userInfo:@{ @"query": queryString, @"language": (langName ? langName : langURI) }];
+        localError = [NSError redlandWrapperErrorWithCode:RedlandWrapperErrorCodeGeneric
+                                     localizedDescription:@"librdf_new_query failed"
+                                                 userInfo:@{ @"query": queryString, @"language": (langName ? langName : langURI) }];
+        goto err;
 	}
-	[[RedlandWorld defaultWorld] handleStoredErrors];
+    
+    localError = [[RedlandWorld defaultWorld] cumulativeError];
+    if (localError) {
+        goto err;
+    }
+    
+err:
+    if (error) {
+        *error = localError;
+    }
 	
-	return [self initWithWrappedObject:newQuery];
+    return localError ? nil : [self initWithWrappedObject:newQuery];
 }
 
 - (void)dealloc
@@ -120,15 +137,22 @@ NSString * const RedlandSPARQLLanguageName = @"sparql";
 /**
  *  Run the query on the given model.
  *  @param aModel The model against which to execute the query
+ *  @param error Error out parameter
  *  @return A RedlandQueryResults object
  */
-- (RedlandQueryResults *)executeOnModel:(RedlandModel *)aModel
+- (RedlandQueryResults *)executeOnModel:(RedlandModel *)aModel error:(NSError *__autoreleasing *)error
 {
 	NSParameterAssert(aModel != nil);
 	
 	librdf_query_results *results = librdf_query_execute(wrappedObject, [aModel wrappedModel]);
-	[[RedlandWorld defaultWorld] handleStoredErrors];
-	return [[RedlandQueryResults alloc] initWithWrappedObject:results];
+    
+    NSError *localError = [[RedlandWorld defaultWorld] cumulativeError];
+    
+    if (error) {
+        *error = localError;
+    }
+    
+    return localError ? nil : [[RedlandQueryResults alloc] initWithWrappedObject:results];
 }
 
 

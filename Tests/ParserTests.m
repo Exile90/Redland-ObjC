@@ -30,7 +30,7 @@
 #import "RedlandStream.h"
 #import "RedlandStreamEnumerator.h"
 #import "RedlandModel-Convenience.h"
-#import "RedlandException.h"
+#import "RedlandError.h"
 #import "RedlandNode-Convenience.h"
 
 static NSString *RDFXMLTestData = nil;
@@ -62,7 +62,7 @@ static NSString * const RDFXMLTestDataLocation = @"http://www.w3.org/1999/02/22-
     NSArray *allStatements;
     
     parser = [RedlandParser parserWithName:RedlandRDFXMLParserName];
-    XCTAssertNoThrow(stream = [parser parseString:RDFXMLTestData asStreamWithBaseURI:testURI]);
+    stream = [parser parseString:RDFXMLTestData asStreamWithBaseURI:testURI error:NULL];
     XCTAssertNotNil(stream);
     allStatements = [[stream statementEnumerator] allObjects];
     XCTAssertNotNil(allStatements);
@@ -83,7 +83,7 @@ static NSString * const RDFXMLTestDataLocation = @"http://www.w3.org/1999/02/22-
     
 	XCTAssertNotNil(data);
     parser = [RedlandParser parserWithName:RedlandRDFXMLParserName];
-    XCTAssertNoThrow(stream = [parser parseData:data asStreamWithBaseURI:testURI]);
+    stream = [parser parseData:data asStreamWithBaseURI:testURI error:NULL];
     XCTAssertNotNil(stream);
     allStatements = [[stream statementEnumerator] allObjects];
     XCTAssertNotNil(allStatements);
@@ -108,8 +108,10 @@ static NSString * const RDFXMLTestDataLocation = @"http://www.w3.org/1999/02/22-
 {
 	NSString *string = @"This is NOT RDF/XML.";
 	RedlandParser *parser = [RedlandParser parserWithName:RedlandRDFXMLParserName];
-	
-	XCTAssertThrowsSpecific([parser parseString:string asStreamWithBaseURI:[RedlandURI URIWithString:@"http://foo/"]], RedlandException);
+    NSError *__autoreleasing error;
+    
+	XCTAssertFalse([parser parseString:string asStreamWithBaseURI:[RedlandURI URIWithString:@"http://foo/"] error:&error]);
+    XCTAssertTrue([error.domain isEqualToString:RedlandWrapperErrorDomain]);
 }
 
 - (void)testSetFeature

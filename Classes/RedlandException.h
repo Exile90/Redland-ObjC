@@ -5,6 +5,7 @@
 //
 //  Copyright 2004 Rene Puls <http://purl.org/net/kianga/>
 //	Copyright 2012 Pascal Pfiffner <http://www.chip.org/>
+//  Copyright 2016 Ivano Bilenchi <http://ivanobilenchi.com/>
 //
 //  This file is available under the following three licenses:
 //   1. GNU Lesser General Public License (LGPL), version 2.1
@@ -26,8 +27,6 @@
 
 
 extern NSString * const RedlandExceptionName;				///< The name of a RedlandException
-extern NSString * const RedlandErrorDomain;					///< The error domain of Redland errors
-
 
 /** 
  *  The class of all Redland exceptions.

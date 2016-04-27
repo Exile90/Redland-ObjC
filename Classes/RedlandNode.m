@@ -27,7 +27,6 @@
 #import "RedlandWorld.h"
 #import "RedlandURI.h"
 #import "RedlandNamespace.h"
-#import "RedlandException.h"
 
 #if defined TARGET_OS_IPHONE || defined TARGET_IPHONE_SIMULATOR
 #	define NSBadComparisonException @"NSBadComparisonException"

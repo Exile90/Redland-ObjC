@@ -61,7 +61,7 @@ static NSString * const RDFXMLTestDataLocation = @"http://www.w3.org/1999/02/22-
 	RedlandParser *parser = [RedlandParser parserWithName:RedlandRDFXMLParserName];
 	model = [RedlandModel new];
 	uri = [RedlandURI URIWithString:RDFXMLTestDataLocation];
-	[parser parseString:RDFXMLTestData intoModel:model withBaseURI:uri];
+	[parser parseString:RDFXMLTestData intoModel:model withBaseURI:uri error:NULL];
 }
 
 - (void)tearDown
@@ -76,7 +76,7 @@ static NSString * const RDFXMLTestDataLocation = @"http://www.w3.org/1999/02/22-
     BOOL isDir;
     
     XCTAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:tempFileName]);
-    XCTAssertNoThrow([serializer serializeModel:model toFileName:tempFileName withBaseURI:uri]);
+    XCTAssertTrue([serializer serializeModel:model toFileName:tempFileName withBaseURI:uri error:NULL]);
     XCTAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:tempFileName isDirectory:(BOOL *)&isDir]);
 	NSStringEncoding usedEncoding = 0;
     XCTAssertTrue([(NSString *)[NSString stringWithContentsOfFile:tempFileName usedEncoding:&usedEncoding error:nil] length] > 0);
@@ -91,11 +91,11 @@ static NSString * const RDFXMLTestDataLocation = @"http://www.w3.org/1999/02/22-
     RedlandParser *parser = [RedlandParser parserWithName:RedlandRDFXMLParserName];
     NSData *data = nil;
     RedlandModel *newModel = [RedlandModel new];
+    data = [serializer serializedDataFromModel:model withBaseURI:uri error:NULL];
     
-    XCTAssertNoThrow(data = [serializer serializedDataFromModel:model withBaseURI:uri]);
     XCTAssertNotNil(data);
     XCTAssertTrue([data length] > 0);
-    XCTAssertNoThrow([parser parseData:data intoModel:newModel withBaseURI:uri]);
+    XCTAssertTrue([parser parseData:data intoModel:newModel withBaseURI:uri error:NULL]);
     XCTAssertTrue([newModel size] > 0);
     XCTAssertEqual([model size], [newModel size]);
 }
@@ -104,7 +104,7 @@ static NSString * const RDFXMLTestDataLocation = @"http://www.w3.org/1999/02/22-
 {
     NSData *data;
     
-    XCTAssertNoThrow(data = [model serializedRDFXMLDataWithBaseURI:uri]);
+    data = [model serializedRDFXMLDataWithBaseURI:uri error:NULL];
     XCTAssertTrue([data length] > 0);
 }
 

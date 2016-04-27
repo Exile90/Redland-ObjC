@@ -52,8 +52,8 @@
 	RedlandStatement *likeStatement = [RedlandStatement statementWithSubject:subject
 																   predicate:predicate
 																	  object:nil];
-
-    XCTAssertNoThrow([model addStatement:testStatement]);
+    
+    XCTAssertTrue([model addStatement:testStatement error:NULL]);
     XCTAssertEqual(1, [model size]);
     XCTAssertTrue([model containsStatement:testStatement]);
     XCTAssertEqualObjects(subject, [model sourceWithArc:predicate target:object]);
@@ -64,8 +64,8 @@
     XCTAssertNoThrow([model removeStatement:testStatement]);
     XCTAssertFalse([model containsStatement:testStatement]);
 	
-	XCTAssertNoThrow([model addStatement:testStatement]);
-	XCTAssertNoThrow([model addStatement:secondStatement]);
+	XCTAssertTrue([model addStatement:testStatement error:NULL]);
+	XCTAssertTrue([model addStatement:secondStatement error:NULL]);
     XCTAssertEqual(2, [model size]);
 	XCTAssertNoThrow([model removeStatementsLike:likeStatement]);
     XCTAssertEqual(0, [model size]);
@@ -87,12 +87,12 @@
 	
 	// create the model
 	RedlandModel *model = [RedlandModel new];
-	XCTAssertNoThrow([model addStatement:main]);
-	XCTAssertNoThrow([model addStatement:sub1]);
-	XCTAssertNoThrow([model addStatement:sub2]);
+	XCTAssertTrue([model addStatement:main error:NULL]);
+	XCTAssertTrue([model addStatement:sub1 error:NULL]);
+	XCTAssertTrue([model addStatement:sub2 error:NULL]);
     XCTAssertEqual(3, [model size]);
 	
-	RedlandModel *submodel = [model submodelForSubject:content];
+	RedlandModel *submodel = [model submodelForSubject:content error:NULL];
 	XCTAssertEqual(2, [submodel size]);
 	for (RedlandStatement *statement in [submodel statementEnumerator]) {
 		XCTAssertTrue([model containsStatement:statement]);
@@ -117,7 +117,7 @@
     statement = [RedlandStatement statementWithSubject:subject
 											 predicate:predicate
 												object:object];
-	XCTAssertNoThrow([model addStatement:statement withContext:nil]);
+	XCTAssertTrue([model addStatement:statement withContext:nil error:NULL]);
 }
 
 

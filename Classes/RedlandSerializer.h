@@ -5,6 +5,7 @@
 //
 //  Copyright 2004 Rene Puls <http://purl.org/net/kianga/>
 //	Copyright 2012 Pascal Pfiffner <http://www.chip.org/>
+//  Copyright 2016 Ivano Bilenchi <http://ivanobilenchi.com/>
 //
 //  This file is available under the following three licenses:
 //   1. GNU Lesser General Public License (LGPL), version 2.1
@@ -55,9 +56,9 @@ extern NSString * const RedlandRSS10Serializer;						///< The name of the RSS 1.
 
 - (librdf_serializer *)wrappedSerializer;
 
-- (void)serializeModel:(RedlandModel *)aModel toFileName:(NSString *)fileName withBaseURI:(RedlandURI *)aURI;
-- (void)serializeModel:(RedlandModel *)aModel toFile:(FILE *)file withBaseURI:(RedlandURI *)aURI;
-- (void)serializeModel:(RedlandModel *)aModel toFileHandle:(NSFileHandle *)fileHandle withBaseURI:(RedlandURI *)aURI;
+- (BOOL)serializeModel:(RedlandModel *)aModel toFileName:(NSString *)fileName withBaseURI:(RedlandURI *)aURI error:(NSError *__autoreleasing *)error;
+- (BOOL)serializeModel:(RedlandModel *)aModel toFile:(FILE *)file withBaseURI:(RedlandURI *)aURI error:(NSError *__autoreleasing *)error;
+- (BOOL)serializeModel:(RedlandModel *)aModel toFileHandle:(NSFileHandle *)fileHandle withBaseURI:(RedlandURI *)aURI error:(NSError *__autoreleasing *)error;
 
 - (void)setPrefix:(NSString *)aPrefix forNamespaceURI:(RedlandURI *)uri;
 
@@ -73,8 +74,8 @@ extern NSString * const RedlandRSS10Serializer;						///< The name of the RSS 1.
  */
 @interface RedlandSerializer (Convenience)
 
-- (NSString *)serializedStringFromModel:(RedlandModel *)aModel withBaseURI:(RedlandURI *)baseURI;
-- (NSData *)serializedDataFromModel:(RedlandModel *)aModel withBaseURI:(RedlandURI *)baseURI;
+- (NSString *)serializedStringFromModel:(RedlandModel *)aModel withBaseURI:(RedlandURI *)baseURI error:(NSError *__autoreleasing *)error;
+- (NSData *)serializedDataFromModel:(RedlandModel *)aModel withBaseURI:(RedlandURI *)baseURI error:(NSError *__autoreleasing *)error;
 
 @end
 
@@ -84,6 +85,6 @@ extern NSString * const RedlandRSS10Serializer;						///< The name of the RSS 1.
  */
 @interface RedlandModel (SerializerConvenience)
 
-- (NSData *)serializedRDFXMLDataWithBaseURI:(RedlandURI *)baseURI;
+- (NSData *)serializedRDFXMLDataWithBaseURI:(RedlandURI *)baseURI error:(NSError *__autoreleasing *)error;
 
 @end
