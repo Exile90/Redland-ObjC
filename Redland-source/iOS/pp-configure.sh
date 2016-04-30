@@ -15,7 +15,7 @@
 #	libraries may compile just fine if you specify multiple archs.
 #
 
-export IPHONEOS_DEPLOYMENT_TARGET="4.2"
+export IPHONEOS_DEPLOYMENT_TARGET="6.0"
 
 # extract command line arguments
 archs=()
@@ -88,7 +88,7 @@ export PKG_CONFIG_PATH="${SDKROOT}/usr/lib/pkgconfig:${DEVROOT}/usr/lib/pkgconfi
 #export PKG_CONFIG_LIBDIR="$PKG_CONFIG"
 
 # set flags
-export CFLAGS="-O3 -miphoneos-version-min=$IPHONEOS_DEPLOYMENT_TARGET -std=c99 $ARCH -pipe --sysroot=$SDKROOT -isysroot $SDKROOT -I${SDKROOT}/usr/include -I${DEVROOT}/usr/include -I${PREFIX}/include"
+export CFLAGS="-O3 -fembed-bitcode -miphoneos-version-min=$IPHONEOS_DEPLOYMENT_TARGET -std=c99 $ARCH -pipe --sysroot=$SDKROOT -isysroot $SDKROOT -I${SDKROOT}/usr/include -I${DEVROOT}/usr/include -I${PREFIX}/include"
 export CPPFLAGS="$CFLAGS"
 export CXXFLAGS="$CFLAGS"
 export LDFLAGS="-miphoneos-version-min=$IPHONEOS_DEPLOYMENT_TARGET --sysroot=$SDKROOT -isysroot $SDKROOT -L${SDKROOT}/usr/lib/system -L${SDKROOT}/usr/lib -L${PREFIX}/lib"
