@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "8DC2EF4F0486A6940098B216"
-               BuildableName = "Redland.framework"
-               BlueprintName = "Redland"
+               BlueprintIdentifier = "EEE7B44D15C84978004D5A68"
+               BuildableName = "libRedland-iOS.a"
+               BlueprintName = "Redland-iOS"
                ReferencedContainer = "container:Redland.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -32,9 +32,9 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "CCF6966C1C6274AB00CF65AF"
-               BuildableName = "Tests.xctest"
-               BlueprintName = "Tests"
+               BlueprintIdentifier = "CCF6964A1C62701F00CF65AF"
+               BuildableName = "Redland-iOS-Tests.xctest"
+               BlueprintName = "Redland-iOS-Tests"
                ReferencedContainer = "container:Redland.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -42,9 +42,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "8DC2EF4F0486A6940098B216"
-            BuildableName = "Redland.framework"
-            BlueprintName = "Redland"
+            BlueprintIdentifier = "EEE7B44D15C84978004D5A68"
+            BuildableName = "libRedland-iOS.a"
+            BlueprintName = "Redland-iOS"
             ReferencedContainer = "container:Redland.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -64,9 +64,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "8DC2EF4F0486A6940098B216"
-            BuildableName = "Redland.framework"
-            BlueprintName = "Redland"
+            BlueprintIdentifier = "EEE7B44D15C84978004D5A68"
+            BuildableName = "libRedland-iOS.a"
+            BlueprintName = "Redland-iOS"
             ReferencedContainer = "container:Redland.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -82,9 +82,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "8DC2EF4F0486A6940098B216"
-            BuildableName = "Redland.framework"
-            BlueprintName = "Redland"
+            BlueprintIdentifier = "EEE7B44D15C84978004D5A68"
+            BuildableName = "libRedland-iOS.a"
+            BlueprintName = "Redland-iOS"
             ReferencedContainer = "container:Redland.xcodeproj">
          </BuildableReference>
       </MacroExpansion>

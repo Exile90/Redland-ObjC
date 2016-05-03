@@ -6,8 +6,8 @@ The code now requires **Automatic Reference Counting** (ARC) to be enabled.
 
 The wrapped libraries are:
 
-- raptor2 _2.0.13_
-- rasqal _0.9.32_
+- raptor2 _2.0.15_
+- rasqal _0.9.33_
 - redland _1.0.17_
 
 The **documentation** is available at [http://p2.github.io/Redland-ObjC/][docs].
