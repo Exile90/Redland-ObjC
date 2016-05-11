@@ -85,8 +85,8 @@ static NSMutableDictionary *GlobalNamespaceDict = nil;
     NSParameterAssert(aName != nil);
     
     if ((self = [super init])) {
-        self.prefix = aPrefix;
-        self.shortName = aName;
+        _prefix = [aPrefix copy];
+        _shortName = [aName copy];
     }
     return self;
 }
@@ -99,6 +99,27 @@ static NSMutableDictionary *GlobalNamespaceDict = nil;
 - (id)copyWithZone:(NSZone *)aZone
 {
     return [[[self class] allocWithZone:aZone] initWithPrefix:_prefix shortName:_shortName];
+}
+
+- (BOOL)isEqual:(id)object
+{
+    if (object == self) {
+        return YES;
+    }
+    
+    BOOL equal = NO;
+    
+    if ([object isKindOfClass:[self class]]) {
+        NSString *objStr = [object prefix];
+        BOOL samePrefix = (objStr == _prefix || [objStr isEqualToString:_prefix]);
+        
+        objStr = [object shortName];
+        BOOL sameShortName = (objStr == _shortName || [objStr isEqualToString:_shortName]);
+        
+        equal = (samePrefix && sameShortName);
+    }
+    
+    return equal;
 }
 
 - (NSUInteger)hash

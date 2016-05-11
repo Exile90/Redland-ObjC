@@ -32,7 +32,9 @@
 
 @implementation RedlandStatement
 
-@dynamic subject, predicate, object;
+@synthesize subject = _subject;
+@synthesize predicate = _predicate;
+@synthesize object = _object;
 
 
 #pragma mark - Init and Cleanup
@@ -101,30 +103,38 @@
 
 - (RedlandNode *)subject
 {
-	/// @todo is it a good idea to cache these in an ivar?
-	librdf_node *node = librdf_statement_get_subject(wrappedObject);
-	if (node) {
-		node = librdf_new_node_from_node(node);
-	}
-	return [[RedlandNode alloc] initWithWrappedObject:node];
+    if (!_subject) {
+        librdf_node *node = librdf_statement_get_subject(wrappedObject);
+        if (node) {
+            node = librdf_new_node_from_node(node);
+        }
+        _subject = [[RedlandNode alloc] initWithWrappedObject:node];
+    }
+    return _subject;
 }
 
 - (RedlandNode *)predicate
 {
-	librdf_node *node = librdf_statement_get_predicate(wrappedObject);
-	if (node) {
-		node = librdf_new_node_from_node(node);
-	}
-	return [[RedlandNode alloc] initWithWrappedObject:node];
+    if (!_predicate) {
+        librdf_node *node = librdf_statement_get_predicate(wrappedObject);
+        if (node) {
+            node = librdf_new_node_from_node(node);
+        }
+        _predicate = [[RedlandNode alloc] initWithWrappedObject:node];
+    }
+    return _predicate;
 }
 
 - (RedlandNode *)object
 {
-	librdf_node *node = librdf_statement_get_object(wrappedObject);
-	if (node) {
-		node = librdf_new_node_from_node(node);
-	}
-	return [[RedlandNode alloc] initWithWrappedObject:node];
+    if (!_object) {
+        librdf_node *node = librdf_statement_get_object(wrappedObject);
+        if (node) {
+            node = librdf_new_node_from_node(node);
+        }
+        _object = [[RedlandNode alloc] initWithWrappedObject:node];
+    }
+    return _object;
 }
 
 /**
@@ -151,23 +161,25 @@
 
 - (BOOL)isEqualToStatement:(RedlandStatement *)aStatement
 {
-	if (aStatement == nil) {
-		return NO;
-	}
 	return 0 != librdf_statement_equals(wrappedObject, [aStatement wrappedStatement]);
 }
 
 - (BOOL)isEqual:(id)otherStatement
 {
+    if (otherStatement == self) {
+        return YES;
+    }
+    
+    BOOL equal = NO;
 	if ([otherStatement isKindOfClass:[self class]]) {
-		return [self isEqualToStatement:otherStatement];
+		equal = [self isEqualToStatement:otherStatement];
 	}
-	return NO;
+	return equal;
 }
 
 - (NSUInteger)hash
 {
-	return (NSUInteger)wrappedObject;
+    return (self.subject.hash + 1231) ^ (self.predicate.hash + 1237) ^ (self.object.hash + 1249);
 }
 
 

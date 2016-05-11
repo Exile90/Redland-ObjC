@@ -25,6 +25,12 @@
 #import "RedlandURI.h"
 #import "RedlandWorld.h"
 
+@interface RedlandURI ()
+{
+    NSString *_stringValue;
+}
+@end
+
 @implementation RedlandURI
 
 #pragma mark - Init and Cleanup
@@ -152,9 +158,12 @@
  */
 - (NSString *)stringValue
 {
-	size_t length;
-	unsigned char *string_value = librdf_uri_as_counted_string(wrappedObject, &length);
-	return [[NSString alloc] initWithBytes:string_value length:length encoding:NSUTF8StringEncoding];
+    if (!_stringValue) {
+        size_t length;
+        unsigned char *string_value = librdf_uri_as_counted_string(wrappedObject, &length);
+        _stringValue = [[NSString alloc] initWithBytes:string_value length:length encoding:NSUTF8StringEncoding];
+    }
+    return _stringValue;
 }
 
 /**
@@ -167,7 +176,7 @@
 
 - (NSUInteger)hash
 {
-	return (NSUInteger)wrappedObject;
+	return [self stringValue].hash;
 }
 
 /**
@@ -176,12 +185,6 @@
  */
 - (BOOL)isEqualToURI:(RedlandURI *)otherURI
 {
-	if (!otherURI) {
-		return NO;
-	}
-	if (self == otherURI) {
-		return YES;
-	}
 	return 0 != librdf_uri_equals(wrappedObject, [otherURI wrappedURI]);
 }
 
@@ -191,10 +194,15 @@
  */
 - (BOOL)isEqual:(id)otherObject
 {
+    if (otherObject == self) {
+        return YES;
+    }
+    
+    BOOL equal = NO;
 	if ([otherObject isKindOfClass:[self class]]) {
-		return [self isEqualToURI:otherObject];
+		equal = [self isEqualToURI:otherObject];
 	}
-	return NO;
+	return equal;
 }
 
 

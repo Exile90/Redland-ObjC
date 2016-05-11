@@ -35,6 +35,18 @@
 #	import <AppKit/NSErrors.h>
 #endif
 
+@interface RedlandNode ()
+{
+    RedlandURI *_URIValue;
+    NSString *_stringValue;
+    NSString *_blankID;
+    
+    RedlandURI *_literalDataType;
+    NSString *_literalLanguage;
+    NSString *_literalValue;
+}
+@end
+
 
 @implementation RedlandNode
 
@@ -307,23 +319,35 @@
  */
 - (BOOL)isEqualToNode:(RedlandNode *)otherNode
 {
-	if (otherNode == nil) {
-		return NO;
-	}
 	return (0 != librdf_node_equals(wrappedObject, [otherNode wrappedNode]));
 }
 
 - (BOOL)isEqual:(id)otherNode
 {
+    if (otherNode == self) {
+        return YES;
+    }
+    
+    BOOL equal = NO;
 	if ([otherNode isKindOfClass:[self class]]) {
-		return [self isEqualToNode:otherNode];
+		equal = [self isEqualToNode:otherNode];
 	}
-	return NO;
+	return equal;
 }
 
 - (NSUInteger)hash
 {
-	return (NSUInteger)wrappedObject;
+    NSUInteger hash = 0;
+    
+    if (self.isResource) {
+        hash = 1231 + self.URIValue.hash;
+    } else if (self.isBlank) {
+        hash = 1237 + self.blankID.hash;
+    } else if (self.isLiteral) {
+        hash = 1249 + (self.literalValue.hash ^ self.literalDataType.hash ^ self.literalLanguage.hash);
+    }
+    
+    return hash;
 }
 
 - (NSComparisonResult)compare:(id)otherNode
@@ -424,20 +448,18 @@
 }
 
 /**
- *  Hello World
  *  @return the literal value of the receiver (literal nodes only).
  */
 - (NSString *)literalValue
 {
-	if (![self isLiteral]) {
-		return nil;
+	if (self.isLiteral && !_literalValue) {
+        size_t length;
+        unsigned char *literal_value;
+        
+        literal_value = librdf_node_get_literal_value_as_counted_string(wrappedObject, &length);
+        _literalValue = [[NSString alloc] initWithBytes:literal_value length:length encoding:NSUTF8StringEncoding];
 	}
-	
-	size_t length;
-	unsigned char *literal_value;
-	
-	literal_value = librdf_node_get_literal_value_as_counted_string(wrappedObject, &length);
-	return [[NSString alloc] initWithBytes:literal_value length:length encoding:NSUTF8StringEncoding];
+    return _literalValue;
 }
 
 /**
@@ -445,16 +467,16 @@
  */
 - (RedlandURI *)URIValue
 {
-	if (![self isResource]) {
-		return nil;
+	if (self.isResource && !_URIValue) {
+        librdf_uri *uri_value;
+        uri_value = librdf_node_get_uri(wrappedObject);
+        if (uri_value != NULL) {
+            uri_value = librdf_new_uri_from_uri(uri_value);
+        }
+        _URIValue = [[RedlandURI alloc] initWithWrappedObject:uri_value];
 	}
 	
-	librdf_uri *uri_value;
-	uri_value = librdf_node_get_uri(wrappedObject);
-	if (uri_value != NULL) {
-		uri_value = librdf_new_uri_from_uri(uri_value);
-	}
-	return [[RedlandURI alloc] initWithWrappedObject:uri_value];
+    return _URIValue;
 }
 
 /**
@@ -462,8 +484,11 @@
  */
 - (NSString *)blankID
 {
-	char *blank_id = (char *)librdf_node_get_blank_identifier(wrappedObject);
-	return [[NSString alloc] initWithUTF8String:blank_id];
+    if (!_blankID) {
+        char *blank_id = (char *)librdf_node_get_blank_identifier(wrappedObject);
+        _blankID = [[NSString alloc] initWithUTF8String:blank_id];
+    }
+    return _blankID;
 }
 
 /**
@@ -479,13 +504,15 @@
  */
 - (RedlandURI *)literalDataType
 {
-	librdf_uri *uri_value;
-	uri_value = librdf_node_get_literal_value_datatype_uri(wrappedObject);
-	if (uri_value != NULL) {
-		uri_value = librdf_new_uri_from_uri(uri_value);
-		return [[RedlandURI alloc] initWithWrappedObject:uri_value];
-	}
-	return nil;
+    if (self.isLiteral && !_literalDataType) {
+        librdf_uri *uri_value;
+        uri_value = librdf_node_get_literal_value_datatype_uri(wrappedObject);
+        if (uri_value != NULL) {
+            uri_value = librdf_new_uri_from_uri(uri_value);
+            _literalDataType = [[RedlandURI alloc] initWithWrappedObject:uri_value];
+        }
+    }
+	return _literalDataType;
 }
 
 /**
@@ -493,11 +520,13 @@
  */
 - (NSString *)literalLanguage
 {
-	char *language = librdf_node_get_literal_value_language(wrappedObject);
-	if (language) {
-		return [[NSString alloc] initWithUTF8String:language];
-	}
-	return nil;
+    if (self.isLiteral && !_literalLanguage) {
+        char *language = librdf_node_get_literal_value_language(wrappedObject);
+        if (language) {
+            _literalLanguage = [[NSString alloc] initWithUTF8String:language];
+        }
+    }
+	return _literalLanguage;
 }
 
 
