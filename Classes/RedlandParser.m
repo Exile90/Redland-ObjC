@@ -269,6 +269,43 @@ err:
     return localError ? nil : [[RedlandStream alloc] initWithWrappedObject:stream];
 }
 
+/**
+ *  Tries to parse the file at the specified path using baseURI as the base URI and returns
+ *  a RedlandStream of statements.
+ *  @param path The path of the file to parse
+ *  @param uri The base URI
+ *  @param error Error out parameter
+ *  @return A RedlandStream instance
+ */
+- (RedlandStream *)parseFileAtPath:(NSString *)path asStreamWithBaseURI:(RedlandURI *)baseURI error:(NSError *__autoreleasing *)error
+{
+    NSParameterAssert(path != nil);
+    NSParameterAssert(baseURI != nil);
+    
+    NSError *localError = nil;
+    librdf_stream *stream = NULL;
+    
+    librdf_uri *uri = librdf_new_uri_from_filename([RedlandWorld defaultWrappedWorld], [path UTF8String]);
+    
+    if (uri == NULL) {
+        localError = [NSError redlandWrapperErrorWithCode:RedlandWrapperErrorCodeGeneric
+                                     localizedDescription:@"librdf_new_uri failed"];
+        goto err;
+    }
+    
+    stream = librdf_parser_parse_as_stream(wrappedObject, uri, [baseURI wrappedURI]);
+    localError = [[RedlandWorld defaultWorld] cumulativeError];
+    
+err:
+    librdf_free_uri(uri);
+    
+    if (error) {
+        *error = localError;
+    }
+    
+    return localError ? nil : [[RedlandStream alloc] initWithWrappedObject:stream];
+}
+
 
 
 #pragma mark - Features

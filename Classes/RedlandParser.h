@@ -60,6 +60,8 @@ extern NSString * const RedlandRelativeURIsFeature;
 
 - (librdf_parser *)wrappedParser;
 
+- (RedlandStream *)parseFileAtPath:(NSString *)path asStreamWithBaseURI:(RedlandURI *)baseURI error:(NSError *__autoreleasing *)error;
+
 - (BOOL)parseData:(NSData *)data intoModel:(RedlandModel *)aModel withBaseURI:(RedlandURI *)baseURI error:(NSError *__autoreleasing *)error;
 - (RedlandStream *)parseData:(NSData *)data asStreamWithBaseURI:(RedlandURI *)baseURI error:(NSError *__autoreleasing *)error;
 
