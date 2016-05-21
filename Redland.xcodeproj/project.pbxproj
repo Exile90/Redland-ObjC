@@ -63,6 +63,7 @@
 		CC257FB51C612E5000342004 /* librdf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CC257FB41C612E5000342004 /* librdf.a */; };
 		CC257FB71C612E6E00342004 /* librasqal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CC257FB61C612E6E00342004 /* librasqal.a */; };
 		CC257FB91C612E7E00342004 /* libraptor2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CC257FB81C612E7E00342004 /* libraptor2.a */; };
+		CC2C115E1CF0E2EE00611A32 /* rdf_stream_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = CC2C115D1CF0E2EE00611A32 /* rdf_stream_internal.h */; };
 		CC3C970A1CC7DCE700169502 /* RedlandError.h in Headers */ = {isa = PBXBuildFile; fileRef = CC3C97081CC7DCE700169502 /* RedlandError.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		CC3C970B1CC7DCE700169502 /* RedlandError.h in Headers */ = {isa = PBXBuildFile; fileRef = CC3C97081CC7DCE700169502 /* RedlandError.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		CC3C970C1CC7DCE700169502 /* RedlandError.m in Sources */ = {isa = PBXBuildFile; fileRef = CC3C97091CC7DCE700169502 /* RedlandError.m */; };
@@ -305,6 +306,7 @@
 		CC257FB41C612E5000342004 /* librdf.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librdf.a; path = "Redland-source/Universal-iOS-Sim/librdf.a"; sourceTree = "<group>"; };
 		CC257FB61C612E6E00342004 /* librasqal.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librasqal.a; path = "Redland-source/Universal-iOS-Sim/librasqal.a"; sourceTree = "<group>"; };
 		CC257FB81C612E7E00342004 /* libraptor2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libraptor2.a; path = "Redland-source/Universal-iOS-Sim/libraptor2.a"; sourceTree = "<group>"; };
+		CC2C115D1CF0E2EE00611A32 /* rdf_stream_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rdf_stream_internal.h; path = "build-iOS-arm64/redland-1.0.17/src/rdf_stream_internal.h"; sourceTree = "<group>"; };
 		CC3C97081CC7DCE700169502 /* RedlandError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RedlandError.h; sourceTree = "<group>"; };
 		CC3C97091CC7DCE700169502 /* RedlandError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RedlandError.m; sourceTree = "<group>"; };
 		CC7EA3381CE3969D00376574 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.3.sdk/usr/lib/libsqlite3.tbd; sourceTree = DEVELOPER_DIR; };
@@ -578,6 +580,14 @@
 			name = "Other Sources";
 			sourceTree = "<group>";
 		};
+		CC2C115C1CF0E2C600611A32 /* Private headers */ = {
+			isa = PBXGroup;
+			children = (
+				CC2C115D1CF0E2EE00611A32 /* rdf_stream_internal.h */,
+			);
+			name = "Private headers";
+			sourceTree = "<group>";
+		};
 		ED699E3406F9CBBF00A624F7 /* Basic Wrapper Classes */ = {
 			isa = PBXGroup;
 			children = (
@@ -772,6 +782,7 @@
 			children = (
 				EE0CB61C15BDD0AD004BB6C9 /* cross-compile.py */,
 				EE7DF2C615ED5C9C00D328C1 /* cross-compile-config.py */,
+				CC2C115C1CF0E2C600611A32 /* Private headers */,
 				EE0CB62015BDD17A004BB6C9 /* Universal */,
 				EEDE81B215BF375200AC2B64 /* Universal-iOS */,
 				EEDE81B615BF375F00AC2B64 /* Universal-Mac */,
@@ -864,6 +875,7 @@
 				CC6BF44A1CD6842E00DEA3B1 /* rasqal.h in Headers */,
 				CC6BF4341CD6842400DEA3B1 /* rdf_concepts.h in Headers */,
 				ED8D26A80688ACA20039DA12 /* RedlandStatement.h in Headers */,
+				CC2C115E1CF0E2EE00611A32 /* rdf_stream_internal.h in Headers */,
 				ED8D26C90688AD1F0039DA12 /* RedlandURI.h in Headers */,
 				ED8D271B0688AEEE0039DA12 /* Redland-ObjC.h in Headers */,
 				CC6BF4471CD6842E00DEA3B1 /* librdf.h in Headers */,

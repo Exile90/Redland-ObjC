@@ -269,6 +269,9 @@ err:
     return localError ? nil : [[RedlandStream alloc] initWithWrappedObject:stream];
 }
 
+// TODO: remove when double free workaround is not needed anymore.
+#import "rdf_stream_internal.h"
+
 /**
  *  Tries to parse the file at the specified path using baseURI as the base URI and returns
  *  a RedlandStream of statements.
@@ -301,6 +304,26 @@ err:
     
     if (error) {
         *error = localError;
+    }
+    
+    /*
+     Workaround for bug in librdf C library that causes a double-free
+     when rdf_free_stream is called on the stream object after
+     librdf_parser_parse_as_stream is called.
+     
+     The double-free happens because raptor already calls the function
+     pointed by finished_method, which is supposed to deallocate some
+     resources. The same function is albeit called by rdf_free_stream,
+     which causes the double free.
+    
+     Possible solutions: use initWithWrappedObject:owner: with owner set
+     to NO, which leaks the stream object, or apply this hack that
+     nils-out the finished_method callback, and everyone wins.
+    
+     TODO: remove once fixed.
+     */
+    if (stream) {
+        stream->finished_method = NULL;
     }
     
     return localError ? nil : [[RedlandStream alloc] initWithWrappedObject:stream];
